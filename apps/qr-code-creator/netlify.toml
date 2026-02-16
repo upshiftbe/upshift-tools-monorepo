@@ -1,0 +1,11 @@
+# Netlify config for qr-code-creator
+# Package directory: apps/qr-code-creator (set in Netlify UI)
+# Base directory: repository root (default)
+
+[build]
+  command = "pnpm nx build qr-code-creator"
+  publish = "apps/qr-code-creator/dist/client"
+  ignore = "! git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- apps/qr-code-creator libs/"
+
+[build.environment]
+  NODE_VERSION = "20"

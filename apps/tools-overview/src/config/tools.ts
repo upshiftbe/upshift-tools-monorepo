@@ -42,11 +42,24 @@ export const TOOLS: Tool[] = [
   },
 ];
 
-/** Resolve tool href: dev → localhost:devPort, prod → VITE_TOOLS_BASE_URL + path or same-origin path */
+/** Env keys for per-tool URLs (when each app has its own Netlify site) */
+const TOOL_URL_KEYS: Record<string, string> = {
+  'qr-code-creator': 'VITE_TOOL_URL_QR_CODE_CREATOR',
+  'email-signature': 'VITE_TOOL_URL_EMAIL_SIGNATURE',
+  'schema-markup-generator': 'VITE_TOOL_URL_SCHEMA_MARKUP_GENERATOR',
+};
+
+/** Resolve tool href: dev → localhost:devPort, prod → env URL or VITE_TOOLS_BASE_URL + path or same-origin */
 export function getToolHref(tool: Tool): string {
-  const base = import.meta.env?.VITE_TOOLS_BASE_URL as string | undefined;
-  if (base) return `${base.replace(/\/$/, '')}${tool.path}`;
   if (import.meta.env.DEV) return `http://localhost:${tool.devPort}`;
+
+  const env = import.meta.env;
+  const perToolUrl = TOOL_URL_KEYS[tool.id] && (env[TOOL_URL_KEYS[tool.id]] as string | undefined);
+  if (perToolUrl) return perToolUrl.replace(/\/$/, '');
+
+  const base = env?.VITE_TOOLS_BASE_URL as string | undefined;
+  if (base) return `${base.replace(/\/$/, '')}${tool.path}`;
+
   if (typeof window !== 'undefined') return `${window.location.origin}${tool.path}`;
   return tool.path;
 }
