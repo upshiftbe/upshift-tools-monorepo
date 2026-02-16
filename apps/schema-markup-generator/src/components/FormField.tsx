@@ -8,7 +8,7 @@ interface FormFieldProps<T extends Record<string, unknown>> {
   label: string
   name: Path<T>
   register: UseFormRegister<T>
-  error?: FieldError
+  error?: FieldError | { message?: string }
   required?: boolean
   type?: 'text' | 'url' | 'email' | 'date' | 'textarea' | 'select'
   placeholder?: string

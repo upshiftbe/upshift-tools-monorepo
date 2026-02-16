@@ -1,0 +1,6 @@
+@import 'tailwindcss';
+
+body {
+  @apply m-0 antialiased;
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+}

@@ -1,4 +1,4 @@
-import type { ChangeEvent, FocusEvent } from 'react'
+import type { ChangeEvent } from 'react'
 import type { FormField as FormFieldType } from '~/types'
 import { Input } from './ui/input'
 import { Field, FieldDescription, FieldLabel, InputGroup } from './ui/form'
