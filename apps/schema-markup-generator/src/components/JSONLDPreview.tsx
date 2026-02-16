@@ -1,5 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
-import { Button } from './ui/button'
+import { Card, CardContent, CardHeader, CardTitle, Button } from '@upshift-tools/shared-ui'
 import { Copy, Check } from 'lucide-react'
 import { useState } from 'react'
 

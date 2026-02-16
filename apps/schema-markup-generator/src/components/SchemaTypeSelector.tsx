@@ -1,4 +1,4 @@
-import { Select, type SelectProps } from './ui/select'
+import { Select, type SelectProps } from '@upshift-tools/shared-ui'
 import { SCHEMA_TYPES } from '~/types/schema'
 import type { SchemaType } from '~/types/schema'
 

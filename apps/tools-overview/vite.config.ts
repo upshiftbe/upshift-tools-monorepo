@@ -9,7 +9,7 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   server: { port: 3000 },
   plugins: [
-    devtools({ eventBusConfig: { port: 42070 } }),
+    devtools({ eventBusConfig: { port: 43070 } }),
     tailwindcss(),
     tsConfigPaths({ projects: ['./tsconfig.json'] }),
     tanstackStart({ srcDirectory: 'src' }),

@@ -8,11 +8,11 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   server: {
-    port: 3001,
+    port: 3011,
   },
   plugins: [
     devtools({
-      eventBusConfig: { port: 42071 },
+      eventBusConfig: { port: 43071 },
     }),
     tailwindcss(),
     tsConfigPaths({

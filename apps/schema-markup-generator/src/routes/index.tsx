@@ -4,7 +4,7 @@ import { SchemaTypeSelector } from '~/components/SchemaTypeSelector'
 import { SchemaForm } from '~/components/SchemaForm'
 import { JSONLDPreview } from '~/components/JSONLDPreview'
 import type { SchemaType } from '~/types/schema'
-import { Card, CardContent } from '~/components/ui/card'
+import { Card, CardContent } from '@upshift-tools/shared-ui'
 
 export const Route = createFileRoute('/')({ component: SchemaMarkupPage })
 

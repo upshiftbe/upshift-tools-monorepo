@@ -13,7 +13,7 @@ const packageJson = JSON.parse(readFileSync(path.resolve(__dirname, 'package.jso
 export default defineConfig({
   server: { port: 3002 },
   plugins: [
-    devtools({ eventBusConfig: { port: 42072 } }),
+    devtools({ eventBusConfig: { port: 43072 } }),
     tailwindcss(),
     tsConfigPaths({ projects: ['./tsconfig.json'] }),
     tanstackStart({ srcDirectory: 'src' }),

@@ -11,6 +11,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@upshift-tools/shared-ui": "workspace:^",
     "@tailwindcss/vite": "^4.0.6",
     "@tanstack/react-devtools": "^0.7.0",
     "@tanstack/react-router": "^1.132.0",

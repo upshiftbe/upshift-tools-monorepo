@@ -1,8 +1,5 @@
-import { Input } from './ui/input'
-import { Textarea } from './ui/textarea'
-import { Label } from './ui/label'
+import { Input, Textarea, Label, Select, cn } from '@upshift-tools/shared-ui'
 import type { UseFormRegister, FieldError, Path } from 'react-hook-form'
-import { cn } from '~/lib/utils'
 
 interface FormFieldProps<T extends Record<string, unknown>> {
   label: string
@@ -40,13 +37,10 @@ export function FormField<T extends Record<string, unknown>>({
       {type === 'textarea' ? (
         <Textarea id={fieldId} {...register(name)} placeholder={placeholder} rows={rows} className={error ? 'border-destructive' : ''} />
       ) : type === 'select' && options ? (
-        <select
+        <Select
           id={fieldId}
           {...register(name)}
-          className={cn(
-            'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
-            error ? 'border-destructive' : ''
-          )}
+          className={cn(error ? 'border-destructive' : '')}
         >
           <option value="">Select an option</option>
           {options.map((option) => (
@@ -54,7 +48,7 @@ export function FormField<T extends Record<string, unknown>>({
               {option.label}
             </option>
           ))}
-        </select>
+        </Select>
       ) : (
         <Input id={fieldId} type={type} {...register(name)} placeholder={placeholder} className={error ? 'border-destructive' : ''} />
       )}

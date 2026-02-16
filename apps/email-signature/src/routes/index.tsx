@@ -1,12 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useCallback, useEffect, useState } from 'react'
+import type { ChangeEvent } from 'react'
+import { Button } from '@upshift-tools/shared-ui'
 import { useFormState } from '~/hooks/useFormState'
 import { useClipboard } from '~/hooks/useClipboard'
 import { AppHeader } from '~/components/AppHeader'
 import { AppFooter } from '~/components/AppFooter'
 import { SignatureForm } from '~/components/SignatureForm'
 import { SignaturePreview } from '~/components/SignaturePreview'
-import type { ChangeEvent } from 'react'
 
 const CONSENT_COOKIE_NAME = 'emailSignatureConsent'
 
@@ -62,10 +63,10 @@ function EmailSignaturePage() {
 
   if (!hydrated) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-emerald-50/40 px-4 py-10 text-slate-900">
+      <div className="min-h-screen bg-background text-foreground px-4 py-10">
         <div className="mx-auto flex max-w-6xl flex-col gap-8">
           <div className="flex items-center justify-center py-20">
-            <p className="text-slate-500">Loading...</p>
+            <p className="text-muted-foreground">Loading...</p>
           </div>
         </div>
       </div>
@@ -73,7 +74,7 @@ function EmailSignaturePage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-emerald-50/40 px-4 py-10 text-slate-900">
+    <div className="min-h-screen bg-background text-foreground px-4 py-10">
       <div className="mx-auto flex max-w-7xl flex-col gap-8">
         <AppHeader />
         <div className="grid items-start gap-6 lg:grid-cols-[1.15fr_0.85fr]">
@@ -94,23 +95,26 @@ function EmailSignaturePage() {
       </div>
       {consent === null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="w-full max-w-3xl rounded-3xl bg-white/95 p-8 text-slate-900 shadow-2xl backdrop-blur">
+          <div className="w-full max-w-3xl rounded-3xl bg-card p-8 text-card-foreground shadow-2xl backdrop-blur">
             <p className="text-base leading-relaxed">We use cookies to improve our free email signature builder.</p>
             <div className="mt-5 flex flex-wrap gap-3">
-              <button
+              <Button
                 type="button"
-                className="cursor-pointer rounded-full bg-emerald-600 px-6 py-2 text-sm font-semibold uppercase tracking-wider text-white transition hover:bg-emerald-500"
+                size="lg"
+                className="rounded-full uppercase tracking-wider"
                 onClick={() => handleConsentDecision('accepted')}
               >
                 Allow cookies
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
-                className="cursor-pointer rounded-full border border-slate-300 px-6 py-2 text-sm font-semibold uppercase tracking-wider text-slate-700 transition hover:bg-slate-50"
+                variant="outline"
+                size="lg"
+                className="rounded-full uppercase tracking-wider"
                 onClick={() => handleConsentDecision('rejected')}
               >
                 Reject cookies
-              </button>
+              </Button>
             </div>
           </div>
         </div>
