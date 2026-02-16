@@ -1,0 +1,17 @@
+{
+  "name": "upshift-tools-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@9.14.2",
+  "scripts": {
+    "build": "nx run-many -t build --all",
+    "dev": "nx run-many -t dev --all",
+    "dev:qr-code-creator": "nx dev qr-code-creator",
+    "dev:email-signature": "nx dev email-signature",
+    "dev:schema-markup-generator": "nx dev schema-markup-generator"
+  },
+  "devDependencies": {
+    "nx": "22.5.1",
+    "@nx/vite": "^22.5.1"
+  }
+}

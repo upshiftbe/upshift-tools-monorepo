@@ -1,0 +1,31 @@
+{
+  "name": "qr-code-creator",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/qr-code-creator/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/.netlify", "{projectRoot}/dist"],
+      "options": {
+        "command": "pnpm exec vite build",
+        "cwd": "apps/qr-code-creator"
+      }
+    },
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec vite dev",
+        "cwd": "apps/qr-code-creator"
+      }
+    },
+    "preview": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec vite preview",
+        "cwd": "apps/qr-code-creator"
+      }
+    }
+  },
+  "tags": []
+}

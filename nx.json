@@ -1,5 +1,22 @@
 {
   "installation": {
     "version": "22.5.1"
+  },
+  "namedInputs": {
+    "production": [
+      "default",
+      "!{projectRoot}/**/*.spec.ts",
+      "!{projectRoot}/**/*.spec.tsx"
+    ]
+  },
+  "targetDefaults": {
+    "build": {
+      "cache": true,
+      "outputs": ["{projectRoot}/dist"],
+      "inputs": ["production", "^production"]
+    },
+    "dev": {
+      "cache": false
+    }
   }
 }
