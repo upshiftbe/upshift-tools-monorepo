@@ -1,4 +1,4 @@
-/* shadcn preset: dark mode, Radix UI, Nova style, Stone base, Teal theme, Lucide, Outfit font, medium radius, subtle menu accent */
+/* Palette from www.upshift.be: primary #151515, accent #00dab9, white/light-grey */
 /* Load Outfit font via <link> in app __root.tsx for correct @import order */
 
 @theme inline {
@@ -29,66 +29,155 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-navbar: var(--navbar);
+  --color-navbar-foreground: var(--navbar-foreground);
 }
 
-/* Stone base + Teal theme, medium radius */
+/* upshift.be brand: teal accent for highlights */
 :root {
-  --radius: 0.5rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.147 0.004 49.25);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.147 0.004 49.25);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.147 0.004 49.25);
-  --primary: oklch(0.45 0.12 179.8);
-  --primary-foreground: oklch(0.985 0.005 180);
-  --secondary: oklch(0.97 0.001 106.424);
-  --secondary-foreground: oklch(0.216 0.006 56.043);
-  --muted: oklch(0.97 0.001 106.424);
-  --muted-foreground: oklch(0.553 0.013 58.071);
-  --accent: oklch(0.94 0.03 179.8);
-  --accent-foreground: oklch(0.35 0.1 179.8);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.923 0.003 48.717);
-  --input: oklch(0.923 0.003 48.717);
-  --ring: oklch(0.45 0.12 179.8);
-  --sidebar: oklch(0.985 0.001 106.423);
-  --sidebar-foreground: oklch(0.147 0.004 49.25);
-  --sidebar-primary: oklch(0.45 0.12 179.8);
-  --sidebar-primary-foreground: oklch(0.985 0.005 180);
-  --sidebar-accent: oklch(0.97 0.002 106);
-  --sidebar-accent-foreground: oklch(0.216 0.006 56.043);
-  --sidebar-border: oklch(0.923 0.003 48.717);
-  --sidebar-ring: oklch(0.709 0.01 56.259);
+  --brand-accent: #00dab9;
+  --brand-accent-light: #cdfff7;
+  --brand-accent-dark: #009e86;
+  --page-gradient: linear-gradient(180deg, #ffffff 0%, #f7f7f7 72%, #f3fffc 100%);
+  --glass-bg: #ffffff;
+  --glass-border: #e6e6e6;
+  --pastel-violet: #e8e4f0;
+  --pastel-amber: #f5f0e6;
+  --pastel-rose: #fce8ec;
+  --radius-glass: 10px;
 }
 
+/* Light mode – matches upshift.be :root semantic colors */
+:root {
+  --radius: 8px;
+  --radius-lg: 12px;
+  --shadow-sm: 0 1px 2px rgba(21, 21, 21, 0.04);
+  --shadow-md: 0 2px 6px rgba(21, 21, 21, 0.04);
+  --shadow-lg: 0 4px 12px rgba(21, 21, 21, 0.05);
+  --shadow-card: 0 1px 3px rgba(21, 21, 21, 0.04);
+
+  --navbar: #ffffffe8;
+  --navbar-foreground: #151515;
+
+  --background: #fff;
+  --foreground: #151515;
+  --card: #fff;
+  --card-foreground: #060606;
+  --popover: #f2f2f2;
+  --popover-foreground: #060606;
+  --primary: #151515;
+  --primary-foreground: #f8f8f8;
+  --secondary: #fff0f4;
+  --secondary-foreground: #0f0d0d;
+  --muted: #f8f8f8;
+  --muted-foreground: #7d797a;
+  --accent: #e4e4e4;
+  --accent-foreground: #0d0d0d;
+  --destructive: #d74843;
+  --destructive-foreground: #fff;
+  --border: #dedede;
+  --input: #cdcdcd;
+  --ring: #00dab9;
+  --sidebar: #f8f8f8;
+  --sidebar-foreground: #060606;
+  --sidebar-primary: #151515;
+  --sidebar-primary-foreground: #f8f8f8;
+  --sidebar-accent: #e4e4e4;
+  --sidebar-accent-foreground: #0d0d0d;
+  --sidebar-border: #151515;
+  --sidebar-ring: #151515;
+}
+
+/* Dark mode – matches upshift.be --*-dark semantic colors */
 .dark {
-  --background: oklch(0.147 0.004 49.25);
-  --foreground: oklch(0.985 0.001 106.423);
-  --card: oklch(0.216 0.006 56.043);
-  --card-foreground: oklch(0.985 0.001 106.423);
-  --popover: oklch(0.216 0.006 56.043);
-  --popover-foreground: oklch(0.985 0.001 106.423);
-  --primary: oklch(0.65 0.13 179.8);
-  --primary-foreground: oklch(0.2 0.06 179.8);
-  --secondary: oklch(0.268 0.007 34.298);
-  --secondary-foreground: oklch(0.985 0.001 106.423);
-  --muted: oklch(0.268 0.007 34.298);
-  --muted-foreground: oklch(0.709 0.01 56.259);
-  --accent: oklch(0.28 0.05 179.8);
-  --accent-foreground: oklch(0.985 0.001 106.423);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.65 0.13 179.8);
-  --sidebar: oklch(0.216 0.006 56.043);
-  --sidebar-foreground: oklch(0.985 0.001 106.423);
-  --sidebar-primary: oklch(0.65 0.13 179.8);
-  --sidebar-primary-foreground: oklch(0.2 0.06 179.8);
-  --sidebar-accent: oklch(0.268 0.007 34.298);
-  --sidebar-accent-foreground: oklch(0.985 0.001 106.423);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.553 0.013 58.071);
+  --radius: 8px;
+  --radius-lg: 12px;
+  --page-gradient: linear-gradient(#00dab91a, #00dab91a);
+  --glass-bg: rgba(20, 20, 20, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --pastel-violet: #2a2640;
+  --pastel-amber: #2e2a20;
+  --pastel-rose: #2e2024;
+  --navbar: #030303;
+  --navbar-foreground: #f8f8f8;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.15);
+  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.12);
+
+  --background: #030303;
+  --foreground: #f8f8f8;
+  --card: #141414;
+  --card-foreground: #f8f8f8;
+  --popover: #141414;
+  --popover-foreground: #f8f8f8;
+  --primary: #868686;
+  --primary-foreground: #060606;
+  --secondary: #211015;
+  --secondary-foreground: #fcf7f8;
+  --muted: #010101;
+  --muted-foreground: #868686;
+  --accent: #292929;
+  --accent-foreground: #f8f8f8;
+  --destructive: #e5554f;
+  --destructive-foreground: #fff;
+  --border: #1515151a;
+  --input: #ffffff26;
+  --ring: #989898;
+  --sidebar: #070707;
+  --sidebar-foreground: #f8f8f8;
+  --sidebar-primary: #868686;
+  --sidebar-primary-foreground: #060606;
+  --sidebar-accent: #292929;
+  --sidebar-accent-foreground: #f8f8f8;
+  --sidebar-border: #ffffff1a;
+  --sidebar-ring: #989898;
+}
+
+/* Base typography - modern, clean hierarchy */
+:root,
+.dark {
+  font-feature-settings:
+    'rlig' 1,
+    'calt' 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Subtle page background */
+.page-gradient-bg {
+  background-color: var(--background);
+  background-image: var(--page-gradient);
+  min-height: 100%;
+}
+
+.page-gradient-bg.grain::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.035;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Frosted glass content panel */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-glass);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Soft pastel card backgrounds */
+.pastel-violet {
+  background-color: var(--pastel-violet);
+}
+.pastel-amber {
+  background-color: var(--pastel-amber);
+}
+.pastel-rose {
+  background-color: var(--pastel-rose);
 }

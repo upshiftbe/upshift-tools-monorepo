@@ -1,8 +1,8 @@
 export function AppHeader() {
   return (
-    <header className="flex flex-col gap-4 rounded-3xl border border-border bg-card p-6 shadow-lg backdrop-blur">
+    <header className="flex flex-col gap-4 rounded-lg border border-border bg-card p-6">
       <div className="flex items-center gap-3 text-sm font-semibold text-primary">
-        <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
           <span>U</span>
         </div>
         <span className="text-xs uppercase tracking-[0.28em]">Upshift</span>

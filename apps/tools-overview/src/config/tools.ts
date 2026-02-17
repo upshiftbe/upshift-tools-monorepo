@@ -7,6 +7,8 @@ export interface Tool {
   devPort: number;
   path: string;
   color: string;
+  /** Soft pastel background: CSS var name --pastel-{key} */
+  pastel: 'violet' | 'amber' | 'rose';
 }
 
 export const TOOLS: Tool[] = [
@@ -19,6 +21,7 @@ export const TOOLS: Tool[] = [
     devPort: 3011,
     path: '/qr-code-creator',
     color: 'from-cyan-500 to-blue-600',
+    pastel: 'violet',
   },
   {
     id: 'email-signature',
@@ -29,6 +32,7 @@ export const TOOLS: Tool[] = [
     devPort: 3002,
     path: '/email-signature',
     color: 'from-emerald-500 to-teal-600',
+    pastel: 'amber',
   },
   {
     id: 'schema-markup-generator',
@@ -39,6 +43,7 @@ export const TOOLS: Tool[] = [
     devPort: 3003,
     path: '/schema-markup-generator',
     color: 'from-violet-500 to-purple-600',
+    pastel: 'rose',
   },
 ];
 

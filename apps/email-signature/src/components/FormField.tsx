@@ -19,7 +19,7 @@ function Field({
   return (
     <div
       className={cn(
-        'rounded-2xl border border-border bg-card px-4 py-3 shadow-sm transition focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 data-[invalid=true]:border-destructive data-[invalid=true]:ring-2 data-[invalid=true]:ring-destructive/20',
+        'rounded-md border border-border bg-card px-4 py-3 transition focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 data-[invalid=true]:border-destructive data-[invalid=true]:ring-2 data-[invalid=true]:ring-destructive/20',
         className
       )}
       data-invalid={dataInvalid}
@@ -31,7 +31,7 @@ function Field({
 }
 
 function InputGroup({ children }: { children: React.ReactNode }) {
-  return <div className="flex flex-1 overflow-hidden rounded-xl border border-input bg-background">{children}</div>
+  return <div className="flex flex-1 overflow-hidden rounded-md border border-input bg-background">{children}</div>
 }
 
 export function FormField({ field, value, error, onChange, onBlur }: FormFieldProps) {

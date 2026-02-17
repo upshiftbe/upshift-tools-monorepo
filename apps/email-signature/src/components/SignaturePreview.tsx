@@ -74,13 +74,13 @@ export function SignaturePreview({ values, previewRef, onReset, onCopy }: Signat
   return (
     <Card className="bg-card text-card-foreground lg:sticky lg:top-10">
       <CardContent className="space-y-5 px-6 pt-1 pb-6">
-        <div className="flex items-center gap-2 rounded-3xl border border-border bg-muted/50 px-3 py-2 text-xs text-muted-foreground">
+        <div className="flex items-center gap-2 rounded-md border border-border bg-muted/50 px-3 py-2 text-xs text-muted-foreground">
           <span className="h-2 w-2 rounded-full bg-destructive" aria-hidden />
           <span className="h-2 w-2 rounded-full bg-yellow-500" aria-hidden />
           <span className="h-2 w-2 rounded-full bg-primary" aria-hidden />
           <span className="ml-auto text-[10px] uppercase tracking-wider">Preview</span>
         </div>
-        <div className="overflow-hidden rounded-2xl border border-border bg-muted shadow-lg">
+        <div className="overflow-hidden rounded-lg border border-border bg-muted">
           <div className="flex items-center gap-3 border-b border-border bg-background px-4 py-3 text-sm">
             <div className="flex flex-col gap-1">
               <span className="text-xs font-semibold uppercase tracking-wider text-primary">Email preview</span>

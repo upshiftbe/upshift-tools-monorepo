@@ -9,7 +9,9 @@
     "dev:overview": "nx dev tools-overview",
     "dev:qr-code-creator": "nx dev qr-code-creator",
     "dev:email-signature": "nx dev email-signature",
-    "dev:schema-markup-generator": "nx dev schema-markup-generator"
+    "dev:schema-markup-generator": "nx dev schema-markup-generator",
+    "format": "nx format:write .",
+    "lint": "nx lint"
   },
   "devDependencies": {
     "nx": "22.5.1",
