@@ -16,3 +16,21 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Empty state: gentle fade-in */
+.qr-empty-state {
+  animation: qr-empty-fade 0.4s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .qr-empty-state {
+    animation: none;
+  }
+}
+@keyframes qr-empty-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

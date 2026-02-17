@@ -6,7 +6,7 @@ import tsConfigPaths from 'vite-tsconfig-paths'
 import viteReact from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   server: { port: 3003 },
   plugins: [
     devtools({ eventBusConfig: { port: 43073 } }),
@@ -14,6 +14,7 @@ export default defineConfig({
     tsConfigPaths({ projects: ['./tsconfig.json'] }),
     tanstackStart({ srcDirectory: 'src' }),
     viteReact(),
-    netlify(),
+    // Only in build: avoids EPERM when Netlify Dev writes to global config during `nx dev`
+    ...(command === 'build' ? [netlify()] : []),
   ],
-})
+}))

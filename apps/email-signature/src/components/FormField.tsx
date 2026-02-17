@@ -19,7 +19,7 @@ function Field({
   return (
     <div
       className={cn(
-        'rounded-md border border-border bg-card px-4 py-3 transition focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 data-[invalid=true]:border-destructive data-[invalid=true]:ring-2 data-[invalid=true]:ring-destructive/20',
+        'rounded-lg border border-border bg-card px-4 py-3.5 shadow-[var(--shadow-sm)] transition focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 data-[invalid=true]:border-destructive data-[invalid=true]:ring-2 data-[invalid=true]:ring-destructive/20',
         className
       )}
       data-invalid={dataInvalid}
@@ -42,7 +42,7 @@ export function FormField({ field, value, error, onChange, onBlur }: FormFieldPr
 
   return (
     <Field className={isWide ? 'sm:col-span-2' : ''} data-invalid={!!error}>
-      <Label htmlFor={field.id} className="text-sm font-semibold">
+      <Label htmlFor={field.id} className="text-sm font-medium text-foreground">
         {field.label}
       </Label>
       {isWebsite || isPhone || isEmail ? (

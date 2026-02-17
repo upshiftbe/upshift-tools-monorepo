@@ -86,10 +86,10 @@ function EmailSignaturePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground px-4 py-10">
-      <div className="mx-auto flex max-w-7xl flex-col gap-8">
+    <div className="min-h-screen bg-background text-foreground px-4 py-10 sm:px-6">
+      <div className="mx-auto flex max-w-7xl flex-col gap-10 sm:gap-12">
         <AppHeader />
-        <div className="grid items-start gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+        <div className="grid items-start gap-8 lg:gap-12 lg:grid-cols-[1.15fr_0.85fr]">
           <section className="space-y-6">
             <SignatureForm
               formState={formState}
@@ -110,16 +110,24 @@ function EmailSignaturePage() {
         </div>
       </div>
       {consent === null && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="w-full max-w-3xl rounded-lg border border-border bg-card p-8 text-card-foreground">
-            <p className="text-base leading-relaxed">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-foreground/20 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="consent-heading"
+        >
+          <div className="w-full max-w-md rounded-2xl border border-border bg-card p-8 text-card-foreground shadow-[var(--shadow-lg)]">
+            <h2 id="consent-heading" className="text-lg font-semibold text-foreground">
+              Cookie consent
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
               We use cookies to improve our free email signature builder.
             </p>
-            <div className="mt-5 flex flex-wrap gap-3">
+            <div className="mt-6 flex flex-wrap gap-3">
               <Button
                 type="button"
                 size="lg"
-                className="rounded-full uppercase tracking-wider"
+                className="rounded-lg"
                 onClick={() => handleConsentDecision("accepted")}
               >
                 Allow cookies
@@ -128,10 +136,10 @@ function EmailSignaturePage() {
                 type="button"
                 variant="outline"
                 size="lg"
-                className="rounded-full uppercase tracking-wider"
+                className="rounded-lg"
                 onClick={() => handleConsentDecision("rejected")}
               >
-                Reject cookies
+                Reject
               </Button>
             </div>
           </div>

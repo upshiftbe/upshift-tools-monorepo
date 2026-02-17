@@ -10,7 +10,7 @@ import path from 'path';
 
 const packageJson = JSON.parse(readFileSync(path.resolve(__dirname, 'package.json'), 'utf-8'));
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   server: { port: 3002 },
   optimizeDeps: {
     // Avoid 504 "Outdated Optimize Dep" after dependency/lockfile changes
@@ -22,9 +22,9 @@ export default defineConfig({
     tsConfigPaths({ projects: ['./tsconfig.json'] }),
     tanstackStart({ srcDirectory: 'src' }),
     viteReact(),
-    netlify(),
+    ...(command === 'build' ? [netlify()] : []),
   ],
   define: {
     __APP_VERSION__: JSON.stringify(packageJson.version),
   },
-});
+}));

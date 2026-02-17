@@ -13,14 +13,16 @@ type SignatureFormProps = {
 
 export function SignatureForm({ formState, errors, onFieldChange, onFieldBlur, onReset }: SignatureFormProps) {
   return (
-    <Card>
-      <CardHeader className="space-y-4">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-          <div className="space-y-2">
-            <CardTitle>Signature details</CardTitle>
-            <CardDescription>Only the filled fields are copied into the final HTML snippet.</CardDescription>
+    <Card className="shadow-[var(--shadow-sm)]">
+      <CardHeader className="space-y-4 pb-2">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="space-y-1">
+            <CardTitle className="text-lg text-foreground">Signature details</CardTitle>
+            <CardDescription className="text-sm text-muted-foreground">
+              Only the filled fields are copied into the final HTML snippet.
+            </CardDescription>
           </div>
-          <Button type="button" variant="outline" size="sm" onClick={onReset}>
+          <Button type="button" variant="outline" size="sm" onClick={onReset} className="shrink-0">
             Reset form
           </Button>
         </div>

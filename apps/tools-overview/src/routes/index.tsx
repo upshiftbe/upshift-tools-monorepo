@@ -28,31 +28,32 @@ function OverviewPage() {
         links: TOOLS.map((t) => ({ label: t.name, href: getToolHref(t) })),
       }}
       footer={true}
-      mainClassName="flex flex-col"
+      mainClassName="flex flex-col page-gradient-bg grain"
+      dataShellVariant="soft"
     >
       <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-6 py-14 sm:py-20">
         <div className="glass-panel p-6 sm:p-8 md:p-10">
-        <header className="mb-16 text-center">
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-            Upshift Tools
-          </h1>
-          <p className="mt-4 text-lg text-muted-foreground">
-            Free, open-source utilities for developers and teams
-          </p>
-        </header>
+          <header className="mb-16 text-center">
+            <h1 className="font-display text-4xl font-bold tracking-tight sm:text-5xl md:text-[2.5rem]">
+              Upshift Tools
+            </h1>
+            <p className="mt-4 text-lg text-muted-foreground">
+              Free, open-source utilities for developers and teams
+            </p>
+          </header>
 
-        <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {TOOLS.map((tool) => (
-            <ToolCard key={tool.id} tool={tool} />
-          ))}
-        </div>
+          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            {TOOLS.map((tool, i) => (
+              <ToolCard key={tool.id} tool={tool} index={i} />
+            ))}
+          </div>
         </div>
       </div>
     </AppShell>
   );
 }
 
-function ToolCard({ tool }: { tool: Tool }) {
+function ToolCard({ tool, index }: { tool: Tool; index: number }) {
   const Icon = ICONS[tool.icon as keyof typeof ICONS] ?? Code2;
   const href = getToolHref(tool);
 
@@ -63,7 +64,10 @@ function ToolCard({ tool }: { tool: Tool }) {
       rel="noopener noreferrer"
       className="block h-full"
     >
-      <Card className="group relative flex h-full flex-col transition hover:border-primary/40">
+      <Card
+        className="tools-card-reveal group relative flex h-full flex-col transition-all duration-300 hover:border-primary/40 hover:shadow-[var(--shadow-md)] focus-visible:outline focus-visible:ring-2 focus-visible:ring-ring"
+        style={{ animationDelay: `${index * 80}ms` }}
+      >
         <CardHeader>
           <div
             className={`mb-2 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${tool.color} text-white shadow-sm`}

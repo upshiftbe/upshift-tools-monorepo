@@ -6,7 +6,7 @@ import tsConfigPaths from 'vite-tsconfig-paths'
 import viteReact from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   server: { port: 3000 },
   plugins: [
     devtools({ eventBusConfig: { port: 43070 } }),
@@ -14,6 +14,6 @@ export default defineConfig({
     tsConfigPaths({ projects: ['./tsconfig.json'] }),
     tanstackStart({ srcDirectory: 'src' }),
     viteReact(),
-    netlify(),
+    ...(command === 'build' ? [netlify()] : []),
   ],
-})
+}))

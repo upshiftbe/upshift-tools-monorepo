@@ -31,6 +31,8 @@ export interface AppShellProps {
   className?: string;
   /** Additional class for the main content area */
   mainClassName?: string;
+  /** Optional shell personality: affects navbar/footer shadow and border radius */
+  dataShellVariant?: "default" | "soft" | "sharp";
 }
 
 const DEFAULT_FOOTER = (
@@ -47,9 +49,26 @@ const DEFAULT_FOOTER = (
   </p>
 );
 
-function Navbar({ config }: { config: AppShellNavbarConfig }) {
+const NAVBAR_STYLES = {
+  default: "border-b border-border shadow-[0_1px_0_0_var(--border)]",
+  soft: "border-b border-border shadow-[var(--shadow-sm)]",
+  sharp: "border-b-2 border-border",
+} as const;
+
+function Navbar({
+  config,
+  variant = "default",
+}: {
+  config: AppShellNavbarConfig;
+  variant?: keyof typeof NAVBAR_STYLES;
+}) {
   return (
-    <header className="sticky top-0 z-50 flex items-center justify-between border-b border-border bg-[var(--navbar)]/95 px-4 py-3 backdrop-blur md:px-6">
+    <header
+      className={cn(
+        "sticky top-0 z-50 flex items-center justify-between bg-[var(--navbar)]/95 px-4 py-3 backdrop-blur md:px-6",
+        NAVBAR_STYLES[variant]
+      )}
+    >
       <a
         href={config.logoHref}
         className="flex items-center gap-2.5 text-[var(--navbar-foreground)] transition hover:opacity-90"
@@ -73,10 +92,27 @@ function Navbar({ config }: { config: AppShellNavbarConfig }) {
   );
 }
 
-function Footer({ config }: { config?: AppShellFooterConfig }) {
+const FOOTER_STYLES = {
+  default: "border-t border-border shadow-[0_-1px_0_0_var(--border)]",
+  soft: "border-t border-border shadow-[var(--shadow-sm)]",
+  sharp: "border-t-2 border-border",
+} as const;
+
+function Footer({
+  config,
+  variant = "default",
+}: {
+  config?: AppShellFooterConfig;
+  variant?: keyof typeof FOOTER_STYLES;
+}) {
   const content = config?.content ?? DEFAULT_FOOTER;
   return (
-    <footer className="border-t border-border bg-[var(--navbar)]/95 px-4 py-4 backdrop-blur md:px-6">
+    <footer
+      className={cn(
+        "bg-[var(--navbar)]/95 px-4 py-4 backdrop-blur md:px-6",
+        FOOTER_STYLES[variant]
+      )}
+    >
       <div className="mx-auto flex max-w-6xl items-center justify-center text-[var(--navbar-foreground)]/90 [&_a]:text-[var(--brand-accent)] [&_a]:hover:text-[var(--brand-accent-dark)]">
         {content}
       </div>
@@ -85,7 +121,17 @@ function Footer({ config }: { config?: AppShellFooterConfig }) {
 }
 
 export const AppShell = React.forwardRef<HTMLDivElement, AppShellProps>(
-  ({ navbar, footer = true, children, className, mainClassName }, ref) => {
+  (
+    {
+      navbar,
+      footer = true,
+      children,
+      className,
+      mainClassName,
+      dataShellVariant: variant = "default",
+    },
+    ref
+  ) => {
     const showFooter = footer !== false;
     const isFooterConfig =
       typeof footer === "object" &&
@@ -104,23 +150,29 @@ export const AppShell = React.forwardRef<HTMLDivElement, AppShellProps>(
           "flex min-h-screen flex-col text-foreground page-gradient-bg",
           className,
         )}
+        data-shell-variant={variant}
       >
         {navbar &&
           (React.isValidElement(navbar) ? (
             navbar
           ) : (
-            <Navbar config={navbar as AppShellNavbarConfig} />
+            <Navbar config={navbar as AppShellNavbarConfig} variant={variant} />
           ))}
         <main className={cn("relative z-10 flex-1", mainClassName)}>{children}</main>
         {showFooter &&
           (isCustomFooterNode ? (
-            <footer className="border-t border-border bg-[var(--navbar)]/95 px-4 py-4 backdrop-blur md:px-6">
+            <footer
+              className={cn(
+                "bg-[var(--navbar)]/95 px-4 py-4 backdrop-blur md:px-6",
+                FOOTER_STYLES[variant]
+              )}
+            >
               <div className="mx-auto flex max-w-6xl items-center justify-center text-[var(--navbar-foreground)] [&_a]:text-[var(--brand-accent)]">
                 {footer}
               </div>
             </footer>
           ) : (
-            <Footer config={footerConfig} />
+            <Footer config={footerConfig} variant={variant} />
           ))}
       </div>
     );
