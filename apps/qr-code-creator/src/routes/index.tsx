@@ -6,44 +6,48 @@ import {
   QrCode,
   Download,
   Palette,
-  ShieldCheck,
   Type,
   Info,
+  Shapes,
+  ImagePlus,
+  X,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, Button, Textarea, Label } from '@upshift-tools/shared-ui'
 
 import { generateQR } from '~/lib/qr'
-import type { ErrorCorrectionLevel } from '~/lib/qr'
 import QrCodeSvg from '~/components/QrCodeSvg'
+import type { ModuleStyle } from '~/components/QrCodeSvg'
 
 export const Route = createFileRoute('/')({ component: App })
 
-const EC_OPTIONS: {
-  value: ErrorCorrectionLevel
-  label: string
-  desc: string
-}[] = [
-  { value: 'L', label: 'Low (7%)', desc: 'Smallest QR code' },
-  { value: 'M', label: 'Medium (15%)', desc: 'Balanced' },
-  { value: 'Q', label: 'Quartile (25%)', desc: 'Good recovery' },
-  { value: 'H', label: 'High (30%)', desc: 'Best recovery' },
+const MODULE_STYLES: { value: ModuleStyle; label: string }[] = [
+  { value: 'square', label: 'Square' },
+  { value: 'rounded', label: 'Rounded' },
+  { value: 'dots', label: 'Dots' },
+  { value: 'heart', label: 'Heart' },
+  { value: 'star', label: 'Star' },
+  { value: 'diamond', label: 'Diamond' },
 ]
 
 function App() {
   const [text, setText] = useState('')
-  const [ecLevel, setEcLevel] = useState<ErrorCorrectionLevel>('M')
   const [fgColor, setFgColor] = useState('#000000')
   const [bgColor, setBgColor] = useState('#ffffff')
+  const [moduleStyle, setModuleStyle] = useState<ModuleStyle>('square')
+  const [logoDataUrl, setLogoDataUrl] = useState<string | null>(null)
+  const [logoCenter, setLogoCenter] = useState(true)
+  const [logoCorners, setLogoCorners] = useState(false)
+  const logoInputRef = useRef<HTMLInputElement>(null)
   const svgRef = useRef<HTMLDivElement>(null)
 
   const qr = useMemo(() => {
     if (!text.trim()) return null
     try {
-      return generateQR(text, ecLevel)
+      return generateQR(text, 'H')
     } catch {
       return null
     }
-  }, [text, ecLevel])
+  }, [text])
 
   const handleDownloadSvg = useCallback(() => {
     const svg = svgRef.current?.querySelector('svg')
@@ -83,6 +87,20 @@ function App() {
 
   const isOverCapacity = text.trim().length > 0 && qr === null
 
+  const handleLogoFile = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !file.type.startsWith('image/')) return
+    const reader = new FileReader()
+    reader.onload = () => setLogoDataUrl(reader.result as string)
+    reader.readAsDataURL(file)
+    e.target.value = ''
+  }, [])
+
+  const clearLogo = useCallback(() => {
+    setLogoDataUrl(null)
+    logoInputRef.current?.value && (logoInputRef.current.value = '')
+  }, [])
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Hero */}
@@ -121,7 +139,7 @@ function App() {
               {isOverCapacity && (
                 <p className="text-sm text-destructive flex items-center gap-1.5" role="alert">
                   <Info className="h-4 w-4 shrink-0" />
-                  Text is too long for the selected error-correction level.
+                  Text is too long. Try a shorter input.
                 </p>
               )}
             </CardContent>
@@ -130,29 +148,90 @@ function App() {
           <Card className="shadow-[var(--shadow-sm)]">
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center gap-2 text-base font-semibold text-foreground">
-                <ShieldCheck className="h-4 w-4 text-primary shrink-0" />
-                Error Correction
+                <Shapes className="h-4 w-4 text-primary shrink-0" />
+                Style
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-2 sm:gap-3">
-                {EC_OPTIONS.map((opt) => (
-                  <Button
-                    key={opt.value}
-                    type="button"
-                    variant={ecLevel === opt.value ? 'default' : 'outline'}
-                    size="sm"
-                    className="h-auto flex-col items-start gap-0.5 py-2.5 px-3 text-left font-normal transition-shadow hover:shadow-[var(--shadow-sm)]"
-                    onClick={() => setEcLevel(opt.value)}
-                  >
-                    <span className="font-medium">{opt.value}</span>
-                    <span className="text-xs opacity-70">— {opt.label}</span>
-                    <span className="block text-xs opacity-50">
-                      {opt.desc}
-                    </span>
-                  </Button>
-                ))}
+            <CardContent className="space-y-4">
+              <div>
+                <Label className="text-sm font-medium text-foreground mb-2 block">Module shape</Label>
+                <div className="flex flex-wrap gap-2">
+                  {MODULE_STYLES.map((opt) => (
+                    <Button
+                      key={opt.value}
+                      type="button"
+                      variant={moduleStyle === opt.value ? 'default' : 'outline'}
+                      size="sm"
+                      className="capitalize"
+                      onClick={() => setModuleStyle(opt.value)}
+                    >
+                      {opt.label}
+                    </Button>
+                  ))}
+                </div>
               </div>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-[var(--shadow-sm)]">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-base font-semibold text-foreground">
+                <ImagePlus className="h-4 w-4 text-primary shrink-0" />
+                Logo
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex flex-wrap items-center gap-3">
+                <input
+                  ref={logoInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleLogoFile}
+                  className="hidden"
+                  aria-label="Upload logo image"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => logoInputRef.current?.click()}
+                  className="gap-2"
+                >
+                  <ImagePlus className="h-4 w-4" />
+                  {logoDataUrl ? 'Change logo' : 'Upload logo'}
+                </Button>
+                {logoDataUrl && (
+                  <Button type="button" variant="ghost" size="sm" onClick={clearLogo} className="gap-2 text-muted-foreground">
+                    <X className="h-4 w-4" />
+                    Remove
+                  </Button>
+                )}
+              </div>
+              {logoDataUrl && (
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-foreground">Placement</Label>
+                  <div className="flex flex-wrap gap-3">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={logoCenter}
+                        onChange={(e) => setLogoCenter(e.target.checked)}
+                        className="rounded border-input"
+                      />
+                      <span className="text-sm">Center</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={logoCorners}
+                        onChange={(e) => setLogoCorners(e.target.checked)}
+                        className="rounded border-input"
+                      />
+                      <span className="text-sm">Corners (finder areas)</span>
+                    </label>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -201,6 +280,10 @@ function App() {
                 qr={qr}
                 fgColor={fgColor}
                 bgColor={bgColor}
+                moduleStyle={moduleStyle}
+                logoUrl={logoDataUrl}
+                logoCenter={logoCenter}
+                logoCorners={logoCorners}
                 className="w-full h-full"
                 id="qr-svg"
               />
@@ -213,7 +296,7 @@ function App() {
                     : 'Enter content on the left to generate a QR code'}
                 </p>
                 <p className="text-xs mt-1.5 text-muted-foreground">
-                  {isOverCapacity ? 'Try a shorter input or lower error correction.' : 'URL, text, or anything you like.'}
+                  {isOverCapacity ? 'Try a shorter input.' : 'URL, text, or anything you like.'}
                 </p>
               </div>
             )}
