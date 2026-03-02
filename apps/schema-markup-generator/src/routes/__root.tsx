@@ -49,6 +49,12 @@ function RootComponent() {
             </>
           ),
           logoHref: "/",
+          links: [
+            {
+              label: "All Tools",
+              href: import.meta.env.VITE_OVERVIEW_URL || (import.meta.env.DEV ? "http://localhost:3000" : "https://tools.upshift.be"),
+            },
+          ],
         }}
         footer={true}
       >

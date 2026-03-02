@@ -1,47 +1,37 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useEffect, useState } from "react";
-import type { ChangeEvent } from "react";
-import { Button } from "@upshift-tools/shared-ui";
-import { useFormState } from "~/hooks/useFormState";
-import { useClipboard } from "~/hooks/useClipboard";
-import { AppHeader } from "~/components/AppHeader";
-import { SignatureForm } from "~/components/SignatureForm";
-import { SignaturePreview } from "~/components/SignaturePreview";
+import { createFileRoute } from '@tanstack/react-router';
+import { useCallback, useEffect, useState } from 'react';
+import type { ChangeEvent } from 'react';
+import { Button } from '@upshift-tools/shared-ui';
+import { useFormState } from '~/hooks/useFormState';
+import { useClipboard } from '~/hooks/useClipboard';
+import { AppHeader } from '~/components/AppHeader';
+import { SignatureForm } from '~/components/SignatureForm';
+import { SignaturePreview } from '~/components/SignaturePreview';
 
-const CONSENT_COOKIE_NAME = "emailSignatureConsent";
+const CONSENT_COOKIE_NAME = 'emailSignatureConsent';
 
-function getConsentCookie(): "accepted" | "rejected" | null {
-  if (typeof document === "undefined") return null;
+function getConsentCookie(): 'accepted' | 'rejected' | null {
+  if (typeof document === 'undefined') return null;
   const cookie = document.cookie
-    .split(";")
+    .split(';')
     .map((s) => s.trim())
     .find((s) => s.startsWith(`${CONSENT_COOKIE_NAME}=`));
   if (!cookie) return null;
-  const [, value] = cookie.split("=");
-  return value === "accepted" || value === "rejected" ? value : null;
+  const [, value] = cookie.split('=');
+  return value === 'accepted' || value === 'rejected' ? value : null;
 }
 
-function setConsentCookie(value: "accepted" | "rejected") {
-  if (typeof document === "undefined") return;
+function setConsentCookie(value: 'accepted' | 'rejected') {
+  if (typeof document === 'undefined') return;
   document.cookie = `${CONSENT_COOKIE_NAME}=${value}; path=/; max-age=${60 * 60 * 24 * 365};`;
 }
 
-export const Route = createFileRoute("/")({ component: EmailSignaturePage });
+export const Route = createFileRoute('/')({ component: EmailSignaturePage });
 
 function EmailSignaturePage() {
-  const {
-    formState,
-    trimmedValues,
-    updateField,
-    setFieldTouched,
-    resetForm,
-    hydrated,
-    errors,
-  } = useFormState();
+  const { formState, trimmedValues, updateField, setFieldTouched, resetForm, hydrated, errors } = useFormState();
   const { previewRef, copySignature } = useClipboard();
-  const [consent, setConsent] = useState<"accepted" | "rejected" | null>(() =>
-    getConsentCookie(),
-  );
+  const [consent, setConsent] = useState<'accepted' | 'rejected' | null>(() => getConsentCookie());
 
   const handleFieldChange = useCallback(
     (id: string) => (event: ChangeEvent<HTMLInputElement>) => {
@@ -61,24 +51,21 @@ function EmailSignaturePage() {
     if (consent === null) setConsent(getConsentCookie());
   }, [consent]);
 
-  const handleConsentDecision = useCallback(
-    (value: "accepted" | "rejected") => {
-      setConsentCookie(value);
-      setConsent(value);
-      if (value === "accepted" && typeof window !== "undefined") {
-        const dl = (window as Window & { dataLayer?: unknown[] }).dataLayer;
-        if (Array.isArray(dl)) dl.push({ event: "consent_granted" });
-      }
-    },
-    [],
-  );
+  const handleConsentDecision = useCallback((value: 'accepted' | 'rejected') => {
+    setConsentCookie(value);
+    setConsent(value);
+    if (value === 'accepted' && typeof window !== 'undefined') {
+      const dl = (window as Window & { dataLayer?: unknown[] }).dataLayer;
+      if (Array.isArray(dl)) dl.push({ event: 'consent_granted' });
+    }
+  }, []);
 
   if (!hydrated) {
     return (
-      <div className="min-h-screen bg-background text-foreground px-4 py-10">
-        <div className="mx-auto flex max-w-6xl flex-col gap-8">
-          <div className="flex items-center justify-center py-20">
-            <p className="text-muted-foreground">Loading...</p>
+      <div className='min-h-screen bg-background text-foreground px-4 py-10'>
+        <div className='mx-auto flex max-w-6xl flex-col gap-8'>
+          <div className='flex items-center justify-center py-20'>
+            <p className='text-muted-foreground'>Loading...</p>
           </div>
         </div>
       </div>
@@ -86,11 +73,11 @@ function EmailSignaturePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground px-4 py-10 sm:px-6">
-      <div className="mx-auto flex max-w-7xl flex-col gap-10 sm:gap-12">
+    <div className='min-h-screen bg-background text-foreground px-4 py-10 sm:px-6'>
+      <div className='mx-auto flex max-w-7xl flex-col gap-10 sm:gap-12'>
         <AppHeader />
-        <div className="grid items-start gap-8 lg:gap-12 lg:grid-cols-[1.15fr_0.85fr]">
-          <section className="space-y-6">
+        <div className='grid items-start gap-8 lg:gap-12 lg:grid-cols-[1.15fr_0.85fr]'>
+          <section className='space-y-6'>
             <SignatureForm
               formState={formState}
               errors={errors}
@@ -99,7 +86,7 @@ function EmailSignaturePage() {
               onReset={resetForm}
             />
           </section>
-          <aside className="space-y-6">
+          <aside className='sticky top-16 space-y-6'>
             <SignaturePreview
               values={trimmedValues}
               previewRef={previewRef}
@@ -111,33 +98,28 @@ function EmailSignaturePage() {
       </div>
       {consent === null && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-foreground/20 backdrop-blur-sm"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="consent-heading"
+          className='fixed inset-0 z-50 flex items-center justify-center p-4 bg-foreground/20 backdrop-blur-sm'
+          role='dialog'
+          aria-modal='true'
+          aria-labelledby='consent-heading'
         >
-          <div className="w-full max-w-md rounded-2xl border border-border bg-card p-8 text-card-foreground shadow-[var(--shadow-lg)]">
-            <h2 id="consent-heading" className="text-lg font-semibold text-foreground">
+          <div className='w-full max-w-md rounded-2xl border border-border bg-card p-8 text-card-foreground shadow-[var(--shadow-lg)]'>
+            <h2 id='consent-heading' className='text-lg font-semibold text-foreground'>
               Cookie consent
             </h2>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+            <p className='mt-3 text-sm leading-relaxed text-muted-foreground'>
               We use cookies to improve our free email signature builder.
             </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Button
-                type="button"
-                size="lg"
-                className="rounded-lg"
-                onClick={() => handleConsentDecision("accepted")}
-              >
+            <div className='mt-6 flex flex-wrap gap-3'>
+              <Button type='button' size='lg' className='rounded-lg' onClick={() => handleConsentDecision('accepted')}>
                 Allow cookies
               </Button>
               <Button
-                type="button"
-                variant="outline"
-                size="lg"
-                className="rounded-lg"
-                onClick={() => handleConsentDecision("rejected")}
+                type='button'
+                variant='outline'
+                size='lg'
+                className='rounded-lg'
+                onClick={() => handleConsentDecision('rejected')}
               >
                 Reject
               </Button>

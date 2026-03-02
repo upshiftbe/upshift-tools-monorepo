@@ -14,7 +14,7 @@
     "lint": "nx lint"
   },
   "devDependencies": {
-    "nx": "22.5.1",
-    "@nx/vite": "^22.5.1"
+    "@nx/vite": "^22.5.3",
+    "nx": "22.5.3"
   }
 }
