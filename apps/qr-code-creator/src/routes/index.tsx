@@ -1,7 +1,7 @@
 'use client'
 
 import { createFileRoute } from '@tanstack/react-router'
-import { useState, useMemo, useCallback, useRef } from 'react'
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import {
   QrCode,
   Download,
@@ -11,6 +11,7 @@ import {
   Shapes,
   ImagePlus,
   X,
+  Check,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, Button, Textarea, Label } from '@upshift-tools/shared-ui'
 
@@ -29,6 +30,8 @@ const MODULE_STYLES: { value: ModuleStyle; label: string }[] = [
   { value: 'diamond', label: 'Diamond' },
 ]
 
+const MAX_CAPACITY = 2953
+
 function App() {
   const [text, setText] = useState('')
   const [fgColor, setFgColor] = useState('#000000')
@@ -37,6 +40,7 @@ function App() {
   const [logoDataUrl, setLogoDataUrl] = useState<string | null>(null)
   const [logoCenter, setLogoCenter] = useState(true)
   const [logoCorners, setLogoCorners] = useState(false)
+  const [downloadFeedback, setDownloadFeedback] = useState<'svg' | 'png' | null>(null)
   const logoInputRef = useRef<HTMLInputElement>(null)
   const svgRef = useRef<HTMLDivElement>(null)
 
@@ -48,6 +52,12 @@ function App() {
       return null
     }
   }, [text])
+
+  useEffect(() => {
+    if (!downloadFeedback) return
+    const id = setTimeout(() => setDownloadFeedback(null), 2000)
+    return () => clearTimeout(id)
+  }, [downloadFeedback])
 
   const handleDownloadSvg = useCallback(() => {
     const svg = svgRef.current?.querySelector('svg')
@@ -61,6 +71,7 @@ function App() {
     a.download = 'qr-code.svg'
     a.click()
     URL.revokeObjectURL(url)
+    setDownloadFeedback('svg')
   }, [])
 
   const handleDownloadPng = useCallback(() => {
@@ -81,11 +92,13 @@ function App() {
       a.href = canvas.toDataURL('image/png')
       a.download = 'qr-code.png'
       a.click()
+      setDownloadFeedback('png')
     }
     img.src = 'data:image/svg+xml;base64,' + btoa(svgStr)
   }, [])
 
   const isOverCapacity = text.trim().length > 0 && qr === null
+  const charRatio = text.length / MAX_CAPACITY
 
   const handleLogoFile = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -103,7 +116,6 @@ function App() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Hero */}
       <section className="px-6 pt-20 pb-10 sm:pt-24 sm:pb-12 text-center">
         <div className="flex items-center justify-center gap-3 mb-4">
           <QrCode className="h-10 w-10 text-primary" aria-hidden />
@@ -117,9 +129,7 @@ function App() {
         </p>
       </section>
 
-      {/* Main content */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-16 lg:pb-20 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12 items-start">
-        {/* Left: controls */}
         <div className="space-y-6 lg:space-y-8">
           <Card className="shadow-[var(--shadow-sm)]">
             <CardHeader className="pb-2">
@@ -136,6 +146,20 @@ function App() {
                 rows={4}
                 className="resize-y min-h-[100px]"
               />
+              <div className="flex items-center justify-between gap-2">
+                <div className="h-1.5 flex-1 rounded-full bg-muted overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-300"
+                    style={{
+                      width: `${Math.min(charRatio * 100, 100)}%`,
+                      backgroundColor: isOverCapacity ? 'var(--destructive)' : charRatio > 0.8 ? 'var(--ring)' : 'var(--primary)',
+                    }}
+                  />
+                </div>
+                <span className={`text-xs tabular-nums shrink-0 ${isOverCapacity ? 'text-destructive font-medium' : 'text-muted-foreground'}`}>
+                  {text.length.toLocaleString()} / {MAX_CAPACITY.toLocaleString()}
+                </span>
+              </div>
               {isOverCapacity && (
                 <p className="text-sm text-destructive flex items-center gap-1.5" role="alert">
                   <Info className="h-4 w-4 shrink-0" />
@@ -162,7 +186,7 @@ function App() {
                       type="button"
                       variant={moduleStyle === opt.value ? 'default' : 'outline'}
                       size="sm"
-                      className="capitalize"
+                      className="capitalize transition-all duration-150"
                       onClick={() => setModuleStyle(opt.value)}
                     >
                       {opt.label}
@@ -216,7 +240,7 @@ function App() {
                         type="checkbox"
                         checked={logoCenter}
                         onChange={(e) => setLogoCenter(e.target.checked)}
-                        className="rounded border-input"
+                        className="rounded border-input accent-[var(--ring)]"
                       />
                       <span className="text-sm">Center</span>
                     </label>
@@ -225,7 +249,7 @@ function App() {
                         type="checkbox"
                         checked={logoCorners}
                         onChange={(e) => setLogoCorners(e.target.checked)}
-                        className="rounded border-input"
+                        className="rounded border-input accent-[var(--ring)]"
                       />
                       <span className="text-sm">Corners (finder areas)</span>
                     </label>
@@ -269,11 +293,10 @@ function App() {
           </Card>
         </div>
 
-        {/* Right: QR preview – emphasised output area */}
         <div className="flex flex-col items-center gap-6 lg:sticky lg:top-8">
           <div
             ref={svgRef}
-            className="w-full max-w-[320px] sm:max-w-sm aspect-square rounded-2xl bg-muted/60 border border-border flex items-center justify-center overflow-hidden shadow-[var(--shadow-md)] ring-1 ring-border/50 qr-preview-container"
+            className="w-full max-w-[320px] sm:max-w-sm aspect-square rounded-2xl bg-muted/60 border border-border flex items-center justify-center overflow-hidden shadow-[var(--shadow-md)] ring-1 ring-border/50 transition-all duration-300"
           >
             {qr ? (
               <QrCodeSvg
@@ -312,19 +335,19 @@ function App() {
                 <Button
                   type="button"
                   onClick={handleDownloadSvg}
-                  className="gap-2 transition-shadow hover:shadow-[var(--shadow-sm)]"
+                  className="gap-2 transition-all duration-150 active:scale-95"
                 >
-                  <Download className="h-4 w-4" />
-                  SVG
+                  {downloadFeedback === 'svg' ? <Check className="h-4 w-4" /> : <Download className="h-4 w-4" />}
+                  {downloadFeedback === 'svg' ? 'Downloaded!' : 'SVG'}
                 </Button>
                 <Button
                   type="button"
                   variant="outline"
                   onClick={handleDownloadPng}
-                  className="gap-2 transition-shadow hover:shadow-[var(--shadow-sm)] focus-visible:ring-2 focus-visible:ring-ring"
+                  className="gap-2 transition-all duration-150 active:scale-95"
                 >
-                  <Download className="h-4 w-4" />
-                  PNG
+                  {downloadFeedback === 'png' ? <Check className="h-4 w-4" /> : <Download className="h-4 w-4" />}
+                  {downloadFeedback === 'png' ? 'Downloaded!' : 'PNG'}
                 </Button>
               </div>
             </>

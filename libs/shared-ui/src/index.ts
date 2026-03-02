@@ -18,3 +18,5 @@ export type {
   AppShellFooterConfig,
   NavLink,
 } from "./components/app-shell";
+export { ThemeToggle } from "./components/theme-toggle";
+export { useTheme } from "./hooks/use-theme";

@@ -114,18 +114,19 @@
 .dark {
   --radius: 8px;
   --radius-lg: 12px;
-  --page-gradient: linear-gradient(#00dab91a, #00dab91a);
+  --page-gradient: linear-gradient(180deg, #030303 0%, #0a0a0a 72%, #071a16 100%);
   --glass-bg: rgba(20, 20, 20, 0.85);
   --glass-border: rgba(255, 255, 255, 0.1);
   --pastel-violet: #2a2640;
   --pastel-amber: #2e2a20;
   --pastel-rose: #2e2024;
-  --navbar: #030303;
+  --brand-accent-light: #0a3d35;
+  --navbar: #0a0a0ae8;
   --navbar-foreground: #f8f8f8;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.15);
-  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.12);
-  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.15);
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.25);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.2);
 
   --background: #030303;
   --foreground: #f8f8f8;
@@ -133,27 +134,27 @@
   --card-foreground: #f8f8f8;
   --popover: #141414;
   --popover-foreground: #f8f8f8;
-  --primary: #868686;
+  --primary: #f0f0f0;
   --primary-foreground: #060606;
   --secondary: #211015;
   --secondary-foreground: #fcf7f8;
-  --muted: #010101;
-  --muted-foreground: #868686;
+  --muted: #1a1a1a;
+  --muted-foreground: #a0a0a0;
   --accent: #292929;
   --accent-foreground: #f8f8f8;
   --destructive: #e5554f;
   --destructive-foreground: #fff;
-  --border: #1515151a;
-  --input: #ffffff26;
-  --ring: #989898;
+  --border: #ffffff14;
+  --input: #ffffff1a;
+  --ring: #00dab9;
   --sidebar: #070707;
   --sidebar-foreground: #f8f8f8;
-  --sidebar-primary: #868686;
+  --sidebar-primary: #f0f0f0;
   --sidebar-primary-foreground: #060606;
   --sidebar-accent: #292929;
   --sidebar-accent-foreground: #f8f8f8;
   --sidebar-border: #ffffff1a;
-  --sidebar-ring: #989898;
+  --sidebar-ring: #00dab9;
 }
 
 /* Base typography - modern, clean hierarchy */
@@ -191,6 +192,14 @@
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-glass);
   box-shadow: var(--shadow-sm);
+}
+
+/* Smooth theme transition */
+html.theme-transitioning,
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+  transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease, box-shadow 200ms ease !important;
 }
 
 /* Soft pastel card backgrounds */

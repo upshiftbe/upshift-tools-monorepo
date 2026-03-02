@@ -1,5 +1,6 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import type { RefObject } from 'react'
+import { Check, Copy, Link2, AlertCircle } from 'lucide-react'
 import { Button, Card, CardContent, CardFooter } from '@upshift-tools/shared-ui'
 import { EmailSignature } from './EmailSignature'
 import type { TrimmedValues } from '~/types'
@@ -16,6 +17,18 @@ export function SignaturePreview({ values, previewRef, onReset, onCopy }: Signat
   const [errorMessage, setErrorMessage] = useState('')
   const [shareStatus, setShareStatus] = useState<'idle' | 'copied' | 'error'>('idle')
   const [shareMessage, setShareMessage] = useState('')
+
+  useEffect(() => {
+    if (copyStatus !== 'success') return
+    const id = setTimeout(() => setCopyStatus('idle'), 3000)
+    return () => clearTimeout(id)
+  }, [copyStatus])
+
+  useEffect(() => {
+    if (shareStatus !== 'copied') return
+    const id = setTimeout(() => setShareStatus('idle'), 3000)
+    return () => clearTimeout(id)
+  }, [shareStatus])
 
   const handleCopy = async () => {
     const result = await onCopy()
@@ -109,7 +122,8 @@ export function SignaturePreview({ values, previewRef, onReset, onCopy }: Signat
               </div>
             </div>
           </div>
-          <div>
+          {/* Force light background for the actual signature (it will be pasted into email clients) */}
+          <div className="light" style={{ colorScheme: 'light' }}>
             <div style={{ backgroundColor: '#ffffff', padding: 24, fontFamily: 'Segoe UI, sans-serif', fontSize: 12, lineHeight: 1.4, color: '#181127', marginBottom: 12 }}>
               <p style={{ margin: 0 }}>Hi there,</p>
               <p style={{ margin: 0 }}>Here&apos;s the latest signature block. It updates live as you tweak the fields on the left.</p>
@@ -122,23 +136,43 @@ export function SignaturePreview({ values, previewRef, onReset, onCopy }: Signat
         </div>
       </CardContent>
       <CardFooter className="flex flex-col gap-2 pt-0">
-        <Button type="button" variant="secondary" className="w-full" onClick={handleShare}>
-          Share signature
+        <Button
+          type="button"
+          variant="secondary"
+          className="w-full gap-2 transition-all duration-150 active:scale-[0.98]"
+          onClick={handleShare}
+        >
+          {shareStatus === 'copied' ? <Check className="h-4 w-4" /> : <Link2 className="h-4 w-4" />}
+          {shareStatus === 'copied' ? 'Link copied!' : 'Share signature'}
         </Button>
-        {shareStatus === 'copied' && <p className="px-1 text-xs text-primary">{shareMessage}</p>}
-        {shareStatus === 'error' && <p className="px-1 text-xs text-destructive">{shareMessage}</p>}
-        <Button type="button" className="w-full" onClick={handleCopy}>
-          Copy signature
+        {shareStatus === 'error' && (
+          <p className="flex items-center gap-1.5 px-1 text-xs text-destructive">
+            <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+            {shareMessage}
+          </p>
+        )}
+        <Button
+          type="button"
+          className="w-full gap-2 transition-all duration-150 active:scale-[0.98]"
+          onClick={handleCopy}
+        >
+          {copyStatus === 'success' ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+          {copyStatus === 'success' ? 'Copied!' : 'Copy signature'}
         </Button>
         {copyStatus === 'success' && (
           <div className="flex items-center justify-between gap-2 px-1">
-            <p className="text-xs text-primary">Signature copied successfully!</p>
+            <p className="text-xs text-[var(--brand-accent)]">Signature copied successfully!</p>
             <button type="button" onClick={handleReset} className="text-xs text-muted-foreground underline hover:text-foreground focus-visible:outline focus-visible:ring-2 focus-visible:ring-ring">
               Reset form
             </button>
           </div>
         )}
-        {copyStatus === 'error' && <p className="px-1 text-xs text-destructive">{errorMessage}</p>}
+        {copyStatus === 'error' && (
+          <p className="flex items-center gap-1.5 px-1 text-xs text-destructive">
+            <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+            {errorMessage}
+          </p>
+        )}
       </CardFooter>
     </Card>
   )

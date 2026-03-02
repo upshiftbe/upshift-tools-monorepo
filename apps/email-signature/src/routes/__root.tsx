@@ -16,6 +16,7 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "color-scheme", content: "light dark" },
       { title: "Email Signature Builder" },
     ],
     links: [
@@ -98,7 +99,7 @@ function RootComponent() {
 
 function RootDocument({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>

@@ -13,7 +13,7 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { name: "color-scheme", content: "light" },
+      { name: "color-scheme", content: "light dark" },
       { title: "Upshift Tools" },
     ],
     links: [
@@ -44,7 +44,7 @@ function RootComponent() {
 
 function RootDocument({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className="light">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>

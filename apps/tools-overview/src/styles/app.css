@@ -2,6 +2,8 @@
 @import '@upshift-tools/shared-ui/theme.css';
 @source "../../../../libs/shared-ui/src";
 
+@custom-variant dark (&:is(.dark *));
+
 * {
   @apply border-border;
 }

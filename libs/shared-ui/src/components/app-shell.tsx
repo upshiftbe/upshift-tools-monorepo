@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { cn } from '../lib/utils';
+import { ThemeToggle } from './theme-toggle';
 
 export interface NavLink {
   label: string;
@@ -75,19 +76,22 @@ function Navbar({
       >
         {config.logo}
       </a>
-      {config.links && config.links.length > 0 && (
-        <nav className='flex items-center gap-4 md:gap-6' aria-label='Main'>
-          {config.links.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className='text-sm font-medium text-[var(--navbar-foreground)]/80 transition hover:text-[var(--navbar-foreground)]'
-            >
-              {link.label}
-            </a>
-          ))}
-        </nav>
-      )}
+      <div className='flex items-center gap-2 md:gap-4'>
+        {config.links && config.links.length > 0 && (
+          <nav className='flex items-center gap-3 md:gap-5' aria-label='Main'>
+            {config.links.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className='text-sm font-medium text-[var(--navbar-foreground)]/80 transition hover:text-[var(--navbar-foreground)]'
+              >
+                {link.label}
+              </a>
+            ))}
+          </nav>
+        )}
+        <ThemeToggle />
+      </div>
     </header>
   );
 }
