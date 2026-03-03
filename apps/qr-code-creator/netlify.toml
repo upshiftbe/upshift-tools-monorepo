@@ -4,7 +4,7 @@
 
 [build]
   command = "pnpm nx build qr-code-creator"
-  publish = "apps/qr-code-creator/dist/client"
+  publish = "apps/qr-code-creator/dist"
   ignore = "! git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- apps/qr-code-creator libs/"
 
 [build.environment]
