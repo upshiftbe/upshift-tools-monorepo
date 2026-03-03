@@ -5,7 +5,6 @@
 [build]
   command = "pnpm nx build email-signature"
   publish = "apps/email-signature/dist"
-  ignore = "! git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- apps/email-signature libs/"
 
 [build.environment]
   NODE_VERSION = "20"
