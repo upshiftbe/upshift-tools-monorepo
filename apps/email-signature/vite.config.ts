@@ -1,5 +1,4 @@
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
-import netlify from '@netlify/vite-plugin-tanstack-start';
 import { defineConfig } from 'vite';
 import { devtools } from '@tanstack/devtools-vite';
 import tsConfigPaths from 'vite-tsconfig-paths';
@@ -10,7 +9,7 @@ import path from 'path';
 
 const packageJson = JSON.parse(readFileSync(path.resolve(__dirname, 'package.json'), 'utf-8'));
 
-export default defineConfig(({ command }) => ({
+export default defineConfig(() => ({
   server: { port: 3002 },
   optimizeDeps: {
     // Avoid 504 "Outdated Optimize Dep" after dependency/lockfile changes
@@ -22,7 +21,6 @@ export default defineConfig(({ command }) => ({
     tsConfigPaths({ projects: ['./tsconfig.json'] }),
     tanstackStart({ srcDirectory: 'src' }),
     viteReact(),
-    ...(command === 'build' ? [netlify()] : []),
   ],
   define: {
     __APP_VERSION__: JSON.stringify(packageJson.version),
