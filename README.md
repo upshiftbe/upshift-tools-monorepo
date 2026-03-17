@@ -4,12 +4,12 @@ Nx monorepo containing four TanStack Start apps for Upshift tools.
 
 ## Apps
 
-| App | Port | Description |
-|-----|------|-------------|
-| **tools-overview** | 3000 | Overview landing page — links to all tools |
-| **qr-code-creator** | 3001 | Create and customize QR codes |
-| **email-signature** | 3002 | Create professional email signatures |
-| **schema-markup-generator** | 3003 | Generate JSON-LD structured data for SEO |
+| App                         | Port | Description                                |
+| --------------------------- | ---- | ------------------------------------------ |
+| **tools-overview**          | 3000 | Overview landing page — links to all tools |
+| **qr-code-creator**         | 3001 | Create and customize QR codes              |
+| **email-signature**         | 3002 | Create professional email signatures       |
+| **schema-markup-generator** | 3003 | Generate JSON-LD structured data for SEO   |
 
 ## Tech Stack
 
@@ -56,24 +56,10 @@ Deploy all four apps as separate Netlify sites from this monorepo.
 
 3. **Leave Base directory** unset (repository root) so `pnpm install` and builds run from root.
 
-4. **tools-overview links to the other tools** — set environment variable `VITE_TOOLS_BASE_URL` on the overview site to the base URL where the 3 tools are deployed, e.g.:
-   - `https://tools.upshift.be` (if tools live at `/qr-code-creator`, `/email-signature`, `/schema-markup-generator`)
-   - Or use separate subdomains and set the overview to link to each tool’s full URL — or set per-tool URLs: `VITE_TOOL_URL_QR_CODE_CREATOR`, `VITE_TOOL_URL_EMAIL_SIGNATURE`, `VITE_TOOL_URL_SCHEMA_MARKUP_GENERATOR`
-
-### Per-site URLs
-
-| Site | Suggested domain |
-|------|-------------------|
-| tools-overview | `tools.upshift.be` or main domain |
-| qr-code-creator | `qr.tools.upshift.be` or `tools.upshift.be/qr-code-creator` |
-| email-signature | `email.tools.upshift.be` or `tools.upshift.be/email-signature` |
-| schema-markup-generator | `schema.tools.upshift.be` or `tools.upshift.be/schema-markup-generator` |
-
-If each app has its own subdomain, set `VITE_TOOLS_BASE_URL` to the parent (e.g. `https://tools.upshift.be`) and ensure tool paths match. The overview uses `VITE_TOOLS_BASE_URL + path` (e.g. `/qr-code-creator`) to build links.
-
 ### Build commands
 
 Each app’s `netlify.toml` defines:
+
 - `command`: `pnpm nx build <project>`
 - `publish`: `apps/<project>/dist/client`
 - `ignore`: only build when that app or `libs/` changes

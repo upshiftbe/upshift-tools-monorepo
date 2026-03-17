@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { QrCode, Mail, Code2, ExternalLink } from "lucide-react";
 import {
+  AppShell,
   Card,
   CardContent,
   CardHeader,
-  AppShell,
 } from "@upshift-tools/shared-ui";
+import { Code2, ExternalLink, Mail, QrCode } from "lucide-react";
 import { TOOLS, getToolHref, type Tool } from "~/config/tools";
 
 const ICONS = { QrCode, Mail, Code2 } as const;
@@ -65,12 +65,12 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
       className="block h-full"
     >
       <Card
-        className="tools-card-reveal group relative flex h-full flex-col transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[var(--shadow-lg)] active:scale-[0.98] focus-visible:outline focus-visible:ring-2 focus-visible:ring-ring"
+        className="tools-card-reveal group relative flex h-full flex-col transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-(--shadow-lg) active:scale-[0.98] focus-visible:outline focus-visible:ring-2 focus-visible:ring-ring"
         style={{ animationDelay: `${index * 80}ms` }}
       >
         <CardHeader>
           <div
-            className={`mb-2 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${tool.color} text-white shadow-sm`}
+            className={`mb-2 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br ${tool.color} text-white shadow-sm`}
           >
             <Icon className="h-6 w-6" />
           </div>

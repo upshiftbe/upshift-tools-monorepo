@@ -1,9 +1,6 @@
-import {
-  Outlet,
-  createRootRoute,
-} from "@tanstack/react-router";
+import { Outlet, createRootRoute } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-import { AppShell } from "@upshift-tools/shared-ui";
+import { APP_URLS, AppShell } from "@upshift-tools/shared-ui";
 import { QrCode } from "lucide-react";
 
 export const Route = createRootRoute({
@@ -27,7 +24,9 @@ function RootComponent() {
           links: [
             {
               label: "All Tools",
-              href: import.meta.env.VITE_OVERVIEW_URL || (import.meta.env.DEV ? "http://localhost:3000" : "https://tools.upshift.be"),
+              href: import.meta.env.DEV
+                ? "http://localhost:3000"
+                : APP_URLS.TOOLS_OVERVIEW,
             },
           ],
         }}
