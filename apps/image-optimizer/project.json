@@ -1,0 +1,31 @@
+{
+  "name": "image-optimizer",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/image-optimizer/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/dist"],
+      "options": {
+        "command": "pnpm exec vite build",
+        "cwd": "apps/image-optimizer"
+      }
+    },
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec vite dev",
+        "cwd": "apps/image-optimizer"
+      }
+    },
+    "preview": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec vite preview",
+        "cwd": "apps/image-optimizer"
+      }
+    }
+  },
+  "tags": []
+}

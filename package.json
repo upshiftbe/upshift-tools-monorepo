@@ -10,6 +10,7 @@
     "dev:qr-code-creator": "nx dev qr-code-creator",
     "dev:email-signature": "nx dev email-signature",
     "dev:schema-markup-generator": "nx dev schema-markup-generator",
+    "dev:image-optimizer": "nx dev image-optimizer",
     "format": "nx format:write .",
     "lint": "nx lint"
   },
