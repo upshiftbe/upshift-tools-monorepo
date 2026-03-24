@@ -1,0 +1,43 @@
+@import 'tailwindcss';
+@import '@upshift-tools/shared-ui/theme.css';
+@source "../../../../libs/shared-ui/src";
+
+@custom-variant dark (&:is(.dark *));
+
+* {
+  @apply border-border;
+}
+body {
+  @apply bg-background text-foreground m-0;
+  font-family:
+    'Outfit',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+.file-row-enter {
+  animation: file-row-in 0.25s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .file-row-enter {
+    animation: none;
+  }
+}
+@keyframes file-row-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

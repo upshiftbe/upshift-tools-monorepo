@@ -1,0 +1,15 @@
+# Netlify config for image-optimizer
+# Package directory: apps/image-optimizer (set in Netlify UI)
+# Base directory: repository root (default)
+
+[build]
+  command = "pnpm nx build image-optimizer"
+  publish = "apps/image-optimizer/dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
