@@ -1,12 +1,13 @@
-import type { TrimmedValues } from '~/types'
-import { RAW_ASSET_BASE } from '~/config/formConfig'
-import { sanitizeUrl, sanitizePhone, sanitizeEmail } from '~/lib/security'
+import type { TrimmedValues } from '~/types';
+import { RAW_ASSET_BASE } from '~/config/formConfig';
+import { SIGNATURE_ICON_MAIL, SIGNATURE_ICON_MAP_PIN, SIGNATURE_ICON_PHONE } from '~/lib/signatureIconDataUrls';
+import { sanitizeUrl, sanitizePhone, sanitizeEmail } from '~/lib/security';
 
-type EmailSignatureProps = { values: TrimmedValues }
+type EmailSignatureProps = { values: TrimmedValues };
 
 export function EmailSignature({ values }: EmailSignatureProps) {
-  const logoSrc = sanitizeUrl(values.logoUrl)
-  const websiteLink = sanitizeUrl(values.websiteUrl) || 'https://upshift.be'
+  const logoSrc = sanitizeUrl(values.logoUrl);
+  const websiteLink = sanitizeUrl(values.websiteUrl) || 'https://upshift.be';
 
   return (
     <div
@@ -19,7 +20,11 @@ export function EmailSignature({ values }: EmailSignatureProps) {
         color: '#181127',
       }}
     >
-      <table cellPadding={0} cellSpacing={0} style={{ width: '450px', fontFamily: 'inherit', fontSize: 'inherit', borderCollapse: 'collapse' }}>
+      <table
+        cellPadding={0}
+        cellSpacing={0}
+        style={{ width: '450px', fontFamily: 'inherit', fontSize: 'inherit', borderCollapse: 'collapse' }}
+      >
         <tbody>
           <tr>
             <td>
@@ -30,25 +35,52 @@ export function EmailSignature({ values }: EmailSignatureProps) {
                       <h3 style={{ margin: 0, fontSize: 17, fontWeight: 500, color: '#181127' }}>{values.name}</h3>
                       <p style={{ margin: 0, fontSize: 12, lineHeight: '22px', color: '#181127' }}>{values.role}</p>
                     </td>
-                    <td style={{ verticalAlign: 'middle', width: '50%', borderLeft: '1px solid #283e89', paddingLeft: 16 }}>
+                    <td
+                      style={{
+                        verticalAlign: 'middle',
+                        width: '50%',
+                        borderLeft: '1px solid #283e89',
+                        paddingLeft: 16,
+                      }}
+                    >
                       <table cellPadding={0} cellSpacing={0} style={{ width: '100%' }}>
                         <tbody>
                           <tr style={{ verticalAlign: 'middle', height: 25 }}>
                             <td width={30} style={{ verticalAlign: 'middle' }}>
-                              <img src={`${RAW_ASSET_BASE}/phone.png`} width={20} height={20} alt="Phone" style={{ display: 'block' }} />
+                              <img
+                                src={SIGNATURE_ICON_PHONE}
+                                width={20}
+                                height={20}
+                                alt='Phone'
+                                style={{ display: 'block' }}
+                              />
                             </td>
                             <td style={{ verticalAlign: 'middle', fontSize: 12 }}>
-                              <a id="link-gsm" href={values.phone ? `tel:${sanitizePhone(values.phone)}` : ''} style={{ textDecoration: 'none', color: '#181127' }}>
+                              <a
+                                id='link-gsm'
+                                href={values.phone ? `tel:${sanitizePhone(values.phone)}` : ''}
+                                style={{ textDecoration: 'none', color: '#181127' }}
+                              >
                                 {values.phone}
                               </a>
                             </td>
                           </tr>
                           <tr style={{ verticalAlign: 'middle', height: 25 }}>
                             <td width={30} style={{ verticalAlign: 'middle' }}>
-                              <img src={`${RAW_ASSET_BASE}/mail.png`} width={20} height={20} alt="Email" style={{ display: 'block' }} />
+                              <img
+                                src={SIGNATURE_ICON_MAIL}
+                                width={20}
+                                height={20}
+                                alt='Email'
+                                style={{ display: 'block' }}
+                              />
                             </td>
                             <td style={{ verticalAlign: 'middle', fontSize: 12 }}>
-                              <a id="link-email" href={values.email ? `mailto:${sanitizeEmail(values.email)}` : ''} style={{ textDecoration: 'none', color: '#181127' }}>
+                              <a
+                                id='link-email'
+                                href={values.email ? `mailto:${sanitizeEmail(values.email)}` : ''}
+                                style={{ textDecoration: 'none', color: '#181127' }}
+                              >
                                 {values.email}
                               </a>
                             </td>
@@ -56,10 +88,22 @@ export function EmailSignature({ values }: EmailSignatureProps) {
                           {values.websiteUrl && (
                             <tr style={{ verticalAlign: 'middle', height: 25 }}>
                               <td width={30} style={{ verticalAlign: 'middle' }}>
-                                <img src={`${RAW_ASSET_BASE}/globe.png`} width={20} height={20} alt="Website" style={{ display: 'block' }} />
+                                <img
+                                  src={`${RAW_ASSET_BASE}/globe.png`}
+                                  width={20}
+                                  height={20}
+                                  alt='Website'
+                                  style={{ display: 'block' }}
+                                />
                               </td>
                               <td style={{ verticalAlign: 'middle', fontSize: 12 }}>
-                                <a id="link-website" href={sanitizeUrl(values.websiteUrl)} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: '#181127' }}>
+                                <a
+                                  id='link-website'
+                                  href={sanitizeUrl(values.websiteUrl)}
+                                  target='_blank'
+                                  rel='noopener noreferrer'
+                                  style={{ textDecoration: 'none', color: '#181127' }}
+                                >
                                   {values.websiteLabel || values.websiteUrl}
                                 </a>
                               </td>
@@ -67,7 +111,13 @@ export function EmailSignature({ values }: EmailSignatureProps) {
                           )}
                           <tr style={{ verticalAlign: 'middle', height: 25 }}>
                             <td width={30} style={{ verticalAlign: 'middle' }}>
-                              <img src={`${RAW_ASSET_BASE}/building.png`} width={20} height={20} alt="Location" style={{ display: 'block' }} />
+                              <img
+                                src={SIGNATURE_ICON_MAP_PIN}
+                                width={20}
+                                height={20}
+                                alt='Location'
+                                style={{ display: 'block' }}
+                              />
                             </td>
                             <td style={{ verticalAlign: 'middle', fontSize: 12 }}>{values.location1}</td>
                           </tr>
@@ -92,13 +142,22 @@ export function EmailSignature({ values }: EmailSignatureProps) {
                   <tr>
                     <td>
                       {logoSrc && (
-                        <a href={websiteLink} target="_blank" rel="noopener noreferrer">
-                          <img src={logoSrc} width={100} alt="Logo" style={{ maxHeight: 50, width: 'auto', display: 'block' }} />
+                        <a href={websiteLink} target='_blank' rel='noopener noreferrer'>
+                          <img
+                            src={logoSrc}
+                            width={100}
+                            alt='Logo'
+                            style={{ maxHeight: 50, width: 'auto', display: 'block' }}
+                          />
                         </a>
                       )}
                     </td>
                     <td style={{ paddingBottom: 2, textAlign: 'right' }}>
-                      <table cellPadding={0} cellSpacing={0} style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center' }}>
+                      <table
+                        cellPadding={0}
+                        cellSpacing={0}
+                        style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center' }}
+                      >
                         <tbody>
                           <tr>
                             {[
@@ -110,8 +169,20 @@ export function EmailSignature({ values }: EmailSignatureProps) {
                               .filter((s) => s.href)
                               .map((social, i) => (
                                 <td key={social.id} style={{ paddingLeft: i === 0 ? 0 : 8 }}>
-                                  <a id={`link-${social.id}`} href={social.href} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', padding: 0, color: '#181127' }}>
-                                    <img src={`${RAW_ASSET_BASE}/${social.icon}`} width={20} height={20} alt={social.id} style={{ display: 'block' }} />
+                                  <a
+                                    id={`link-${social.id}`}
+                                    href={social.href}
+                                    target='_blank'
+                                    rel='noopener noreferrer'
+                                    style={{ display: 'inline-block', padding: 0, color: '#181127' }}
+                                  >
+                                    <img
+                                      src={`${RAW_ASSET_BASE}/${social.icon}`}
+                                      width={20}
+                                      height={20}
+                                      alt={social.id}
+                                      style={{ display: 'block' }}
+                                    />
                                   </a>
                                 </td>
                               ))}
@@ -128,11 +199,15 @@ export function EmailSignature({ values }: EmailSignatureProps) {
             <td>
               <table cellPadding={0} cellSpacing={0} style={{ width: '100%' }}>
                 <tbody>
-                  <tr><td height={5} /></tr>
+                  <tr>
+                    <td height={5} />
+                  </tr>
                   <tr>
                     <td style={{ width: '100%', borderBottom: '1px solid #283e89', display: 'block' }} />
                   </tr>
-                  <tr><td height={5} /></tr>
+                  <tr>
+                    <td height={5} />
+                  </tr>
                 </tbody>
               </table>
             </td>
@@ -140,5 +215,5 @@ export function EmailSignature({ values }: EmailSignatureProps) {
         </tbody>
       </table>
     </div>
-  )
+  );
 }

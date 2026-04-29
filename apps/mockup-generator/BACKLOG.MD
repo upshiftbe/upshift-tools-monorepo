@@ -1,0 +1,2 @@
+- let users place the screenshots in the canvas
+-

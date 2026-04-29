@@ -6,7 +6,7 @@ export const OUTPUT_PRESETS = {
 } as const;
 
 export type OutputPreset = keyof typeof OUTPUT_PRESETS;
-export type BackgroundStyle = 'solid' | 'gradient' | 'warm' | 'pattern';
+export type BackgroundStyle = 'solid' | 'gradient' | 'pattern';
 export type DeviceStyle = 'none' | 'phone' | 'browser';
 export type LayoutStyle = 'center' | 'overlap' | 'row';
 
@@ -26,6 +26,14 @@ export interface MockupSettings {
   radius: number;
   shadow: number;
   rotation: number;
+  solidColor: string;
+  gradientStart: string;
+  gradientEnd: string;
+  gradientAngle: number;
+  patternBase: string;
+  patternColor: string;
+  patternOpacity: number;
+  patternScale: number;
 }
 
 interface Rect {
@@ -43,7 +51,7 @@ export function renderMockup(canvas: HTMLCanvasElement, images: MockupImage[], s
   canvas.width = preset.width;
   canvas.height = preset.height;
   ctx.clearRect(0, 0, preset.width, preset.height);
-  drawBackground(ctx, preset.width, preset.height, settings.background);
+  drawBackground(ctx, preset.width, preset.height, settings);
 
   const selected = images.slice(0, settings.count);
   if (!selected.length) {
@@ -67,40 +75,50 @@ export function renderMockup(canvas: HTMLCanvasElement, images: MockupImage[], s
   });
 }
 
-function drawBackground(ctx: CanvasRenderingContext2D, width: number, height: number, background: BackgroundStyle) {
-  if (background === 'solid') {
-    ctx.fillStyle = '#e8f5f8';
+function drawBackground(ctx: CanvasRenderingContext2D, width: number, height: number, settings: MockupSettings) {
+  if (settings.background === 'solid') {
+    ctx.fillStyle = settings.solidColor;
     ctx.fillRect(0, 0, width, height);
     return;
   }
 
-  if (background === 'gradient') {
-    const gradient = ctx.createLinearGradient(0, 0, width, height);
-    gradient.addColorStop(0, '#41b8dc');
-    gradient.addColorStop(0.48, '#20a9c7');
-    gradient.addColorStop(1, '#08758a');
+  if (settings.background === 'gradient') {
+    const gradient = createAngledGradient(ctx, width, height, settings.gradientAngle);
+    gradient.addColorStop(0, settings.gradientStart);
+    gradient.addColorStop(1, settings.gradientEnd);
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
-    drawWavePattern(ctx, width, height, 'rgba(255,255,255,0.14)');
     return;
   }
 
-  if (background === 'pattern') {
-    const gradient = ctx.createLinearGradient(0, height, width, 0);
-    gradient.addColorStop(0, '#f1dccb');
-    gradient.addColorStop(0.5, '#c9855d');
-    gradient.addColorStop(1, '#74442f');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, width, height);
-    drawNoiseDots(ctx, width, height);
-    return;
-  }
-
-  ctx.fillStyle = '#f8f5ef';
+  ctx.fillStyle = settings.patternBase;
   ctx.fillRect(0, 0, width, height);
-  ctx.strokeStyle = 'rgba(22,17,15,0.06)';
-  ctx.lineWidth = 1;
-  const step = Math.max(24, Math.round(Math.min(width, height) / 34));
+  drawGridPattern(ctx, width, height, settings.patternColor, settings.patternOpacity, settings.patternScale);
+  drawDotPattern(ctx, width, height, settings.patternColor, settings.patternOpacity * 0.65, settings.patternScale);
+}
+
+function createAngledGradient(ctx: CanvasRenderingContext2D, width: number, height: number, angle: number) {
+  const radians = ((angle - 90) * Math.PI) / 180;
+  const length = Math.abs(width * Math.cos(radians)) + Math.abs(height * Math.sin(radians));
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const deltaX = Math.cos(radians) * length * 0.5;
+  const deltaY = Math.sin(radians) * length * 0.5;
+  return ctx.createLinearGradient(centerX - deltaX, centerY - deltaY, centerX + deltaX, centerY + deltaY);
+}
+
+function drawGridPattern(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  color: string,
+  opacity: number,
+  scale: number,
+) {
+  ctx.save();
+  ctx.strokeStyle = hexToRgba(color, opacity / 100);
+  ctx.lineWidth = Math.max(1, Math.min(width, height) / 1200);
+  const step = Math.max(16, scale);
   for (let x = 0; x <= width; x += step) {
     ctx.beginPath();
     ctx.moveTo(x, 0);
@@ -113,35 +131,41 @@ function drawBackground(ctx: CanvasRenderingContext2D, width: number, height: nu
     ctx.lineTo(width, y);
     ctx.stroke();
   }
-}
-
-function drawWavePattern(ctx: CanvasRenderingContext2D, width: number, height: number, color: string) {
-  ctx.save();
-  ctx.strokeStyle = color;
-  ctx.lineWidth = Math.max(1, width / 900);
-  const amplitude = Math.max(5, height / 150);
-  const spacing = Math.max(18, height / 42);
-  for (let y = -spacing; y < height + spacing; y += spacing) {
-    ctx.beginPath();
-    for (let x = 0; x <= width; x += 18) {
-      const waveY = y + Math.sin(x / 34) * amplitude;
-      if (x === 0) ctx.moveTo(x, waveY);
-      else ctx.lineTo(x, waveY);
-    }
-    ctx.stroke();
-  }
   ctx.restore();
 }
 
-function drawNoiseDots(ctx: CanvasRenderingContext2D, width: number, height: number) {
+function drawDotPattern(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  color: string,
+  opacity: number,
+  scale: number,
+) {
   ctx.save();
-  ctx.fillStyle = 'rgba(255,255,255,0.08)';
-  for (let y = 0; y < height; y += 26) {
-    for (let x = 0; x < width; x += 26) {
-      if ((x + y) % 78 === 0) ctx.fillRect(x, y, 2, 2);
+  ctx.fillStyle = hexToRgba(color, opacity / 100);
+  const step = Math.max(16, scale);
+  const size = Math.max(1.5, scale / 18);
+  for (let y = step / 2; y < height; y += step) {
+    for (let x = step / 2; x < width; x += step) {
+      if ((Math.round(x / step) + Math.round(y / step)) % 3 === 0) {
+        ctx.beginPath();
+        ctx.arc(x, y, size, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
   }
   ctx.restore();
+}
+
+function hexToRgba(hex: string, alpha: number) {
+  const normalized = hex.replace('#', '');
+  const safe = normalized.length === 3 ? normalized.split('').map((char) => char + char).join('') : normalized;
+  const value = Number.parseInt(safe, 16);
+  const red = (value >> 16) & 255;
+  const green = (value >> 8) & 255;
+  const blue = value & 255;
+  return `rgba(${red},${green},${blue},${Math.max(0, Math.min(1, alpha))})`;
 }
 
 function drawEmptyState(ctx: CanvasRenderingContext2D, width: number, height: number) {

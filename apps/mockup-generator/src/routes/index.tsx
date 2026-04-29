@@ -45,6 +45,14 @@ const DEFAULT_SETTINGS: MockupSettings = {
   radius: 34,
   shadow: 62,
   rotation: 8,
+  solidColor: '#e8f5f8',
+  gradientStart: '#41b8dc',
+  gradientEnd: '#08758a',
+  gradientAngle: 115,
+  patternBase: '#f8f5ef',
+  patternColor: '#16110f',
+  patternOpacity: 7,
+  patternScale: 36,
 };
 
 function App() {
@@ -109,7 +117,10 @@ function App() {
       const target = prev.find((item) => item.id === id);
       if (target) URL.revokeObjectURL(target.objectUrl);
       const next = prev.filter((item) => item.id !== id);
-      setSettings((current) => ({ ...current, count: Math.max(1, Math.min(current.count, next.length || 1)) as 1 | 2 | 3 }));
+      setSettings((current) => ({
+        ...current,
+        count: Math.max(1, Math.min(current.count, next.length || 1)) as 1 | 2 | 3,
+      }));
       return next;
     });
   }, []);
@@ -176,8 +187,8 @@ function App() {
               Turn screenshots into polished launch images
             </h1>
             <p className='mt-3 text-sm leading-6 text-muted-foreground'>
-              Compose up to three screenshots into copyable PNG assets with canvas-rendered device frames, social presets,
-              gradients, shadows, and fast browser-only export.
+              Compose up to three screenshots into copyable PNG assets with canvas-rendered device frames, social
+              presets, gradients, shadows, and fast browser-only export.
             </p>
           </div>
           <div className='rounded-[var(--radius)] border border-border bg-card px-3 py-2 text-sm text-muted-foreground'>
@@ -186,7 +197,7 @@ function App() {
         </header>
 
         <div className='grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-start'>
-          <main className='space-y-5'>
+          <main className='space-y-5 sticky top-[5rem]'>
             <div
               className={[
                 'rounded-[var(--radius-xl)] border border-dashed transition duration-200',
@@ -211,7 +222,9 @@ function App() {
                 <Upload className='h-5 w-5' aria-hidden />
               </span>
               <div>
-                <p className='font-semibold text-foreground'>{isDragging ? 'Drop screenshots here' : 'Upload screenshots'}</p>
+                <p className='font-semibold text-foreground'>
+                  {isDragging ? 'Drop screenshots here' : 'Upload screenshots'}
+                </p>
                 <p className='mt-1 text-sm text-muted-foreground'>Add 1-3 PNG, JPEG, WebP, or GIF files.</p>
               </div>
               <input
@@ -258,40 +271,42 @@ function App() {
               </div>
             )}
 
-            <div className='mockup-preview-enter overflow-hidden rounded-[var(--radius-xl)] border border-border bg-card p-3 shadow-[var(--shadow-sm)]'>
-              <canvas ref={canvasRef} className='block h-auto w-full rounded-[calc(var(--radius-xl)-8px)]' />
-            </div>
+            <div className='space-y-4 lg:sticky lg:top-20'>
+              <div className='mockup-preview-enter overflow-hidden rounded-[var(--radius-xl)] border border-border bg-card p-3 shadow-[var(--shadow-sm)]'>
+                <canvas ref={canvasRef} className='block h-auto w-full rounded-[calc(var(--radius-xl)-8px)]' />
+              </div>
 
-            <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'>
-              <p className='text-sm text-muted-foreground'>
-                {selectedImages.length > 0
-                  ? `${selectedImages.length} screenshot${selectedImages.length === 1 ? '' : 's'} in the current composition.`
-                  : 'The preview is generated locally and exported from the same canvas.'}
-              </p>
-              <div className='flex flex-wrap gap-2'>
-                <Button type='button' variant='outline' onClick={copyPng} className='gap-2' disabled={isExporting}>
-                  {isExporting ? <Loader2 className='h-4 w-4 animate-spin' /> : <Copy className='h-4 w-4' />}
-                  {copyStatus === 'copied' ? 'Copied' : 'Copy PNG'}
-                </Button>
-                <Button type='button' onClick={downloadPng} className='gap-2' disabled={isExporting}>
-                  <Download className='h-4 w-4' />
-                  Download PNG
-                </Button>
+              <div className='flex flex-col gap-2 rounded-[var(--radius)] border border-border bg-card/95 p-3 shadow-[var(--shadow-sm)] backdrop-blur sm:flex-row sm:items-center sm:justify-between'>
+                <p className='text-sm text-muted-foreground'>
+                  {selectedImages.length > 0
+                    ? `${selectedImages.length} screenshot${selectedImages.length === 1 ? '' : 's'} in the current composition.`
+                    : 'The preview is generated locally and exported from the same canvas.'}
+                </p>
+                <div className='flex flex-wrap gap-2'>
+                  <Button type='button' variant='outline' onClick={copyPng} className='gap-2' disabled={isExporting}>
+                    {isExporting ? <Loader2 className='h-4 w-4 animate-spin' /> : <Copy className='h-4 w-4' />}
+                    {copyStatus === 'copied' ? 'Copied' : 'Copy PNG'}
+                  </Button>
+                  <Button type='button' onClick={downloadPng} className='gap-2' disabled={isExporting}>
+                    <Download className='h-4 w-4' />
+                    Download PNG
+                  </Button>
+                </div>
               </div>
-            </div>
 
-            {copyStatus === 'error' && (
-              <div className='flex items-center gap-2 rounded-[var(--radius)] border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive'>
-                <Trash2 className='h-4 w-4' />
-                Copy is not available in this browser context. Download still works.
-              </div>
-            )}
-            {copyStatus === 'copied' && (
-              <div className='flex items-center gap-2 rounded-[var(--radius)] border border-[var(--success)]/25 bg-[var(--success-soft)] px-3 py-2 text-sm text-[var(--success)]'>
-                <CheckCircle2 className='h-4 w-4' />
-                PNG copied to clipboard.
-              </div>
-            )}
+              {copyStatus === 'error' && (
+                <div className='flex items-center gap-2 rounded-[var(--radius)] border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive'>
+                  <Trash2 className='h-4 w-4' />
+                  Copy is not available in this browser context. Download still works.
+                </div>
+              )}
+              {copyStatus === 'copied' && (
+                <div className='flex items-center gap-2 rounded-[var(--radius)] border border-[var(--success)]/25 bg-[var(--success-soft)] px-3 py-2 text-sm text-[var(--success)]'>
+                  <CheckCircle2 className='h-4 w-4' />
+                  PNG copied to clipboard.
+                </div>
+              )}
+            </div>
           </main>
 
           <aside className='space-y-5 xl:sticky xl:top-20'>
@@ -356,11 +371,11 @@ function App() {
                   options={[
                     { label: 'Solid', value: 'solid' },
                     { label: 'Gradient', value: 'gradient' },
-                    { label: 'Warm', value: 'warm' },
                     { label: 'Pattern', value: 'pattern' },
                   ]}
                   onChange={(value) => updateSetting(setSettings, 'background', value as BackgroundStyle)}
                 />
+                <BackgroundControls settings={settings} setSettings={setSettings} />
                 <RangeControl
                   label='Padding'
                   value={settings.padding}
@@ -412,6 +427,157 @@ function updateSetting<Key extends keyof MockupSettings>(
   value: MockupSettings[Key],
 ) {
   setSettings((prev) => ({ ...prev, [key]: value }));
+}
+
+function BackgroundControls({
+  settings,
+  setSettings,
+}: {
+  settings: MockupSettings;
+  setSettings: React.Dispatch<React.SetStateAction<MockupSettings>>;
+}) {
+  if (settings.background === 'solid') {
+    return (
+      <div className='space-y-3 rounded-[var(--radius)] border border-border bg-muted/45 p-3'>
+        <ColorControl
+          label='Solid color'
+          value={settings.solidColor}
+          onChange={(value) => updateSetting(setSettings, 'solidColor', value)}
+        />
+        <BackgroundPresetRow
+          presets={['#e8f5f8', '#f8f5ef', '#fffcf7', '#16110f', '#d9ecff']}
+          onSelect={(value) => updateSetting(setSettings, 'solidColor', value)}
+        />
+      </div>
+    );
+  }
+
+  if (settings.background === 'gradient') {
+    return (
+      <div className='space-y-4 rounded-[var(--radius)] border border-border bg-muted/45 p-3'>
+        <div className='grid grid-cols-2 gap-3'>
+          <ColorControl
+            label='Start'
+            value={settings.gradientStart}
+            onChange={(value) => updateSetting(setSettings, 'gradientStart', value)}
+          />
+          <ColorControl
+            label='End'
+            value={settings.gradientEnd}
+            onChange={(value) => updateSetting(setSettings, 'gradientEnd', value)}
+          />
+        </div>
+        <RangeControl
+          label='Angle'
+          value={settings.gradientAngle}
+          min={0}
+          max={360}
+          step={5}
+          onChange={(value) => updateSetting(setSettings, 'gradientAngle', value)}
+        />
+        <div className='grid grid-cols-3 gap-2'>
+          {[
+            ['#41b8dc', '#08758a'],
+            ['#f1dccb', '#74442f'],
+            ['#f8f5ef', '#06c2a4'],
+          ].map(([start, end]) => (
+            <button
+              key={`${start}-${end}`}
+              type='button'
+              className='h-9 rounded-[calc(var(--radius)-4px)] border border-border shadow-[var(--shadow-sm)] transition hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+              style={{ background: `linear-gradient(115deg, ${start}, ${end})` }}
+              onClick={() =>
+                setSettings((prev) => ({
+                  ...prev,
+                  gradientStart: start,
+                  gradientEnd: end,
+                }))
+              }
+              aria-label={`Use ${start} to ${end} gradient`}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className='space-y-4 rounded-[var(--radius)] border border-border bg-muted/45 p-3'>
+      <div className='grid grid-cols-2 gap-3'>
+        <ColorControl
+          label='Base'
+          value={settings.patternBase}
+          onChange={(value) => updateSetting(setSettings, 'patternBase', value)}
+        />
+        <ColorControl
+          label='Pattern'
+          value={settings.patternColor}
+          onChange={(value) => updateSetting(setSettings, 'patternColor', value)}
+        />
+      </div>
+      <BackgroundPresetRow
+        presets={['#f8f5ef', '#e8f5f8', '#f1dccb', '#16110f']}
+        onSelect={(value) => updateSetting(setSettings, 'patternBase', value)}
+      />
+      <RangeControl
+        label='Pattern opacity'
+        value={settings.patternOpacity}
+        min={1}
+        max={28}
+        step={1}
+        onChange={(value) => updateSetting(setSettings, 'patternOpacity', value)}
+      />
+      <RangeControl
+        label='Pattern scale'
+        value={settings.patternScale}
+        min={18}
+        max={84}
+        step={2}
+        onChange={(value) => updateSetting(setSettings, 'patternScale', value)}
+      />
+    </div>
+  );
+}
+
+function ColorControl({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
+  return (
+    <label className='block space-y-2'>
+      <span className='text-xs font-semibold text-muted-foreground'>{label}</span>
+      <span className='flex min-h-10 items-center gap-2 rounded-[calc(var(--radius)-4px)] border border-border bg-card px-2'>
+        <input
+          type='color'
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          className='h-6 w-8 cursor-pointer border-0 bg-transparent p-0'
+          aria-label={label}
+        />
+        <input
+          type='text'
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          className='min-w-0 flex-1 bg-transparent text-xs font-semibold uppercase text-foreground outline-none'
+          aria-label={`${label} hex value`}
+        />
+      </span>
+    </label>
+  );
+}
+
+function BackgroundPresetRow({ presets, onSelect }: { presets: string[]; onSelect: (value: string) => void }) {
+  return (
+    <div className='flex flex-wrap gap-2'>
+      {presets.map((color) => (
+        <button
+          key={color}
+          type='button'
+          className='h-7 w-7 rounded-full border border-border shadow-[var(--shadow-sm)] transition hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+          style={{ backgroundColor: color }}
+          onClick={() => onSelect(color)}
+          aria-label={`Use ${color}`}
+        />
+      ))}
+    </div>
+  );
 }
 
 function SegmentedControl({
