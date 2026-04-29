@@ -62,10 +62,10 @@ function EmailSignaturePage() {
 
   if (!hydrated) {
     return (
-      <div className='min-h-screen bg-background text-foreground px-4 py-10'>
+      <div className='min-h-screen bg-background px-4 py-8 text-foreground'>
         <div className='mx-auto flex max-w-6xl flex-col gap-8'>
           <div className='flex items-center justify-center py-20'>
-            <p className='text-muted-foreground'>Loading...</p>
+            <p className='text-muted-foreground'>Loading</p>
           </div>
         </div>
       </div>
@@ -73,10 +73,10 @@ function EmailSignaturePage() {
   }
 
   return (
-    <div className='min-h-screen bg-background text-foreground px-4 py-10 sm:px-6'>
-      <div className='mx-auto flex max-w-7xl flex-col gap-10 sm:gap-12'>
+    <div className='min-h-screen bg-background px-4 py-8 text-foreground sm:px-6 sm:py-10'>
+      <div className='mx-auto flex max-w-7xl flex-col gap-6'>
         <AppHeader />
-        <div className='grid items-start gap-8 lg:gap-12 lg:grid-cols-[1.15fr_0.85fr]'>
+        <div className='grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_500px]'>
           <section className='space-y-6'>
             <SignatureForm
               formState={formState}
@@ -86,7 +86,7 @@ function EmailSignaturePage() {
               onReset={resetForm}
             />
           </section>
-          <aside className='sticky top-16 space-y-6'>
+          <aside className='lg:sticky lg:top-20'>
             <SignaturePreview
               values={trimmedValues}
               previewRef={previewRef}
@@ -98,27 +98,26 @@ function EmailSignaturePage() {
       </div>
       {consent === null && (
         <div
-          className='fixed inset-0 z-50 flex items-center justify-center p-4 bg-foreground/20 backdrop-blur-sm'
+          className='fixed inset-0 z-50 flex items-center justify-center bg-foreground/20 p-4 backdrop-blur-sm'
           role='dialog'
           aria-modal='true'
           aria-labelledby='consent-heading'
         >
-          <div className='w-full max-w-md rounded-2xl border border-border bg-card p-8 text-card-foreground shadow-[var(--shadow-lg)]'>
+          <div className='w-full max-w-md rounded-[var(--radius-lg)] border border-border bg-card p-6 text-card-foreground shadow-[var(--shadow-lg)]'>
             <h2 id='consent-heading' className='text-lg font-semibold text-foreground'>
-              Cookie consent
+              Cookie preferences
             </h2>
             <p className='mt-3 text-sm leading-relaxed text-muted-foreground'>
-              We use cookies to improve our free email signature builder.
+              We use a small preference cookie and analytics consent signal to improve this free tool.
             </p>
             <div className='mt-6 flex flex-wrap gap-3'>
-              <Button type='button' size='lg' className='rounded-lg' onClick={() => handleConsentDecision('accepted')}>
-                Allow cookies
+              <Button type='button' size='lg' onClick={() => handleConsentDecision('accepted')}>
+                Allow
               </Button>
               <Button
                 type='button'
                 variant='outline'
                 size='lg'
-                className='rounded-lg'
                 onClick={() => handleConsentDecision('rejected')}
               >
                 Reject

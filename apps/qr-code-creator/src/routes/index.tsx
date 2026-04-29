@@ -116,25 +116,21 @@ function App() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <section className="px-6 pt-20 pb-10 sm:pt-24 sm:pb-12 text-center">
-        <div className="flex items-center justify-center gap-3 mb-4">
-          <QrCode className="h-10 w-10 text-primary" aria-hidden />
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl text-foreground">
-            QR Code Creator
-          </h1>
-        </div>
-        <p className="text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
-          Generate QR codes instantly — powered by a from-scratch encoder, no
-          external libraries.
-        </p>
-      </section>
+      <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+        <header className="mb-6 border-b border-border pb-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">QR Code Creator</p>
+          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">Generate a production-ready QR code</h1>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
+            Add content, adjust the module style, and export as SVG or PNG. Encoding happens locally in the browser.
+          </p>
+        </header>
 
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-16 lg:pb-20 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12 items-start">
-        <div className="space-y-6 lg:space-y-8">
-          <Card className="shadow-[var(--shadow-sm)]">
+        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
+        <div className="space-y-5">
+          <Card>
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center gap-2 text-base font-semibold text-foreground">
-                <Type className="h-4 w-4 text-primary shrink-0" />
+                <Type className="h-4 w-4 text-[var(--brand-accent-strong)] shrink-0" />
                 Content
               </CardTitle>
             </CardHeader>
@@ -152,7 +148,7 @@ function App() {
                     className="h-full rounded-full transition-all duration-300"
                     style={{
                       width: `${Math.min(charRatio * 100, 100)}%`,
-                      backgroundColor: isOverCapacity ? 'var(--destructive)' : charRatio > 0.8 ? 'var(--ring)' : 'var(--primary)',
+                      backgroundColor: isOverCapacity ? 'var(--destructive)' : charRatio > 0.8 ? 'var(--warning)' : 'var(--brand-accent-strong)',
                     }}
                   />
                 </div>
@@ -169,10 +165,10 @@ function App() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-[var(--shadow-sm)]">
+          <Card>
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center gap-2 text-base font-semibold text-foreground">
-                <Shapes className="h-4 w-4 text-primary shrink-0" />
+                <Shapes className="h-4 w-4 text-[var(--brand-accent-strong)] shrink-0" />
                 Style
               </CardTitle>
             </CardHeader>
@@ -197,10 +193,10 @@ function App() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-[var(--shadow-sm)]">
+          <Card>
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center gap-2 text-base font-semibold text-foreground">
-                <ImagePlus className="h-4 w-4 text-primary shrink-0" />
+                <ImagePlus className="h-4 w-4 text-[var(--brand-accent-strong)] shrink-0" />
                 Logo
               </CardTitle>
             </CardHeader>
@@ -240,7 +236,7 @@ function App() {
                         type="checkbox"
                         checked={logoCenter}
                         onChange={(e) => setLogoCenter(e.target.checked)}
-                        className="rounded border-input accent-[var(--ring)]"
+                        className="rounded border-input accent-[var(--brand-accent-strong)]"
                       />
                       <span className="text-sm">Center</span>
                     </label>
@@ -249,7 +245,7 @@ function App() {
                         type="checkbox"
                         checked={logoCorners}
                         onChange={(e) => setLogoCorners(e.target.checked)}
-                        className="rounded border-input accent-[var(--ring)]"
+                        className="rounded border-input accent-[var(--brand-accent-strong)]"
                       />
                       <span className="text-sm">Corners (finder areas)</span>
                     </label>
@@ -259,33 +255,35 @@ function App() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-[var(--shadow-sm)]">
+          <Card>
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center gap-2 text-base font-semibold text-foreground">
-                <Palette className="h-4 w-4 text-primary shrink-0" />
-                Colours
+                <Palette className="h-4 w-4 text-[var(--brand-accent-strong)] shrink-0" />
+                Colors
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex gap-6">
-                <div className="flex flex-col gap-2">
-                  <Label className="text-sm font-medium text-foreground">Foreground</Label>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="flex items-center justify-between gap-3 rounded-[var(--radius)] border border-border bg-muted/40 px-3 py-2">
+                  <Label htmlFor="qr-fg-color" className="text-sm font-medium text-foreground">Foreground</Label>
                   <input
+                    id="qr-fg-color"
                     type="color"
                     value={fgColor}
                     onChange={(e) => setFgColor(e.target.value)}
-                    className="h-10 w-10 rounded-lg border border-input cursor-pointer bg-transparent hover:ring-2 hover:ring-primary/20 transition-shadow"
-                    aria-label="Foreground colour"
+                    className="h-9 w-11 cursor-pointer rounded-[var(--radius)] border border-input bg-transparent p-1 transition-shadow hover:ring-2 hover:ring-ring/30"
+                    aria-label="Foreground color"
                   />
                 </div>
-                <div className="flex flex-col gap-2">
-                  <Label className="text-sm font-medium text-foreground">Background</Label>
+                <div className="flex items-center justify-between gap-3 rounded-[var(--radius)] border border-border bg-muted/40 px-3 py-2">
+                  <Label htmlFor="qr-bg-color" className="text-sm font-medium text-foreground">Background</Label>
                   <input
+                    id="qr-bg-color"
                     type="color"
                     value={bgColor}
                     onChange={(e) => setBgColor(e.target.value)}
-                    className="h-10 w-10 rounded-lg border border-input cursor-pointer bg-transparent hover:ring-2 hover:ring-primary/20 transition-shadow"
-                    aria-label="Background colour"
+                    className="h-9 w-11 cursor-pointer rounded-[var(--radius)] border border-input bg-transparent p-1 transition-shadow hover:ring-2 hover:ring-ring/30"
+                    aria-label="Background color"
                   />
                 </div>
               </div>
@@ -293,10 +291,17 @@ function App() {
           </Card>
         </div>
 
-        <div className="flex flex-col items-center gap-6 lg:sticky lg:top-8">
+        <aside className="flex flex-col items-center gap-5 lg:sticky lg:top-20">
+          <div className="w-full rounded-[var(--radius-lg)] border border-border bg-card p-4 shadow-[var(--shadow-card)]">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold text-foreground">Preview</p>
+                <p className="text-xs text-muted-foreground">{qr ? `Version ${qr.version}, ${qr.size}x${qr.size} modules` : 'Waiting for content'}</p>
+              </div>
+            </div>
           <div
             ref={svgRef}
-            className="w-full max-w-[320px] sm:max-w-sm aspect-square rounded-2xl bg-muted/60 border border-border flex items-center justify-center overflow-hidden shadow-[var(--shadow-md)] ring-1 ring-border/50 transition-all duration-300"
+            className="flex aspect-square w-full items-center justify-center overflow-hidden rounded-[var(--radius)] border border-border bg-muted/60 transition duration-200"
           >
             {qr ? (
               <QrCodeSvg
@@ -324,13 +329,10 @@ function App() {
               </div>
             )}
           </div>
+          </div>
 
           {qr && (
             <>
-              <p className="text-xs text-muted-foreground">
-                Version {qr.version} — {qr.size}×{qr.size} modules
-              </p>
-
               <div className="flex gap-3 flex-wrap justify-center">
                 <Button
                   type="button"
@@ -338,7 +340,7 @@ function App() {
                   className="gap-2 transition-all duration-150 active:scale-95"
                 >
                   {downloadFeedback === 'svg' ? <Check className="h-4 w-4" /> : <Download className="h-4 w-4" />}
-                  {downloadFeedback === 'svg' ? 'Downloaded!' : 'SVG'}
+                  {downloadFeedback === 'svg' ? 'Downloaded' : 'SVG'}
                 </Button>
                 <Button
                   type="button"
@@ -347,11 +349,12 @@ function App() {
                   className="gap-2 transition-all duration-150 active:scale-95"
                 >
                   {downloadFeedback === 'png' ? <Check className="h-4 w-4" /> : <Download className="h-4 w-4" />}
-                  {downloadFeedback === 'png' ? 'Downloaded!' : 'PNG'}
+                  {downloadFeedback === 'png' ? 'Downloaded' : 'PNG'}
                 </Button>
               </div>
             </>
           )}
+        </aside>
         </div>
       </section>
     </div>

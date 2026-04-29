@@ -1,0 +1,374 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-04-29T15:12:26+02:00",
+  "title": "Design System: upshift",
+  "extensions": {
+    "colorMeta": {
+      "warm-ash-cream": {
+        "role": "neutral",
+        "displayName": "Warm Ash Cream",
+        "canonical": "#f8f5ef",
+        "tonalRamp": [
+          "oklch(18% 0.01 70)",
+          "oklch(28% 0.012 70)",
+          "oklch(40% 0.014 70)",
+          "oklch(54% 0.014 70)",
+          "oklch(68% 0.012 70)",
+          "oklch(80% 0.01 70)",
+          "oklch(90% 0.008 70)",
+          "oklch(96% 0.006 70)"
+        ]
+      },
+      "warm-paper": {
+        "role": "neutral",
+        "displayName": "Warm Paper",
+        "canonical": "#fffcf7",
+        "tonalRamp": [
+          "oklch(18% 0.008 70)",
+          "oklch(30% 0.01 70)",
+          "oklch(44% 0.012 70)",
+          "oklch(58% 0.012 70)",
+          "oklch(72% 0.01 70)",
+          "oklch(84% 0.008 70)",
+          "oklch(93% 0.006 70)",
+          "#fffcf7"
+        ]
+      },
+      "ink-brown": {
+        "role": "neutral",
+        "displayName": "Ink Brown",
+        "canonical": "#16110f",
+        "tonalRamp": [
+          "#16110f",
+          "oklch(24% 0.012 50)",
+          "oklch(34% 0.014 50)",
+          "oklch(46% 0.014 50)",
+          "oklch(60% 0.012 50)",
+          "oklch(74% 0.01 50)",
+          "oklch(86% 0.008 50)",
+          "oklch(94% 0.006 50)"
+        ]
+      },
+      "signal-teal": {
+        "role": "primary",
+        "displayName": "Signal Teal",
+        "canonical": "#06c2a4",
+        "tonalRamp": [
+          "oklch(18% 0.04 180)",
+          "oklch(28% 0.07 180)",
+          "oklch(40% 0.09 180)",
+          "oklch(52% 0.105 180)",
+          "#049e86",
+          "#06c2a4",
+          "oklch(82% 0.08 180)",
+          "oklch(94% 0.04 180)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero and major page headlines."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section titles and editorial headings."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Readable service and marketing copy."
+      }
+    },
+    "shadows": [
+      {
+        "name": "surface-ambient",
+        "value": "0 12px 30px rgba(22, 17, 15, 0.04)",
+        "purpose": "Default low lift for surface-card."
+      },
+      {
+        "name": "primary-button",
+        "value": "0 12px 28px rgba(6, 194, 164, 0.25)",
+        "purpose": "Resting lift for primary CTAs."
+      },
+      {
+        "name": "primary-button-hover",
+        "value": "0 16px 34px rgba(6, 194, 164, 0.35)",
+        "purpose": "Hover lift for primary CTAs."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out-quart",
+        "value": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "purpose": "Reveal animations and nav underlines."
+      },
+      {
+        "name": "fade-up",
+        "value": "680ms cubic-bezier(0.22, 1, 0.36, 1)",
+        "purpose": "Default scroll reveal."
+      },
+      {
+        "name": "blur-up",
+        "value": "760ms cubic-bezier(0.22, 1, 0.36, 1)",
+        "purpose": "Soft entrance for support copy and media."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "nav-wide",
+        "value": "1200px"
+      }
+    ],
+    "patterns": {
+      "brandGrid": {
+        "displayName": "Brand Grid",
+        "purpose": "Quiet technical workshop texture for hero sections, social quote posts, carousel covers and story covers.",
+        "backgroundColor": "#f8f5ef",
+        "lineColor": "rgba(22, 17, 15, 0.06)",
+        "lineWidth": "1px",
+        "cellSize": "36px",
+        "css": "background-image: linear-gradient(to right, rgba(22, 17, 15, 0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(22, 17, 15, 0.06) 1px, transparent 1px); background-size: 36px 36px;",
+        "usage": [
+          "Use on Warm Ash Cream or Warm Paper backgrounds.",
+          "Use behind hero copy and social posts that need a website-linked texture.",
+          "Keep low contrast; do not recolor teal or place over busy imagery."
+        ]
+      }
+    },
+    "socialMedia": {
+      "defaultLanguage": "nl-BE",
+      "brandHandle": "upshift",
+      "exportDefaults": {
+        "format": "png",
+        "colorProfile": "sRGB",
+        "background": "#f8f5ef",
+        "avoidPureWhite": true,
+        "safeAreaPercent": 9
+      },
+      "channels": [
+        {
+          "name": "LinkedIn feed square",
+          "size": "1200x1200",
+          "aspectRatio": "1:1",
+          "safeArea": "108px on every edge",
+          "useFor": "Single insight, quote, proof cue or CTA-led post."
+        },
+        {
+          "name": "LinkedIn feed portrait",
+          "size": "1200x1500",
+          "aspectRatio": "4:5",
+          "safeArea": "108px left/right, 120px top/bottom",
+          "useFor": "Mini-frameworks, case-study proof and short educational posts."
+        },
+        {
+          "name": "Instagram square",
+          "size": "1080x1080",
+          "aspectRatio": "1:1",
+          "safeArea": "96px on every edge",
+          "useFor": "One decisive idea with strong typography."
+        },
+        {
+          "name": "Instagram story or reel cover",
+          "size": "1080x1920",
+          "aspectRatio": "9:16",
+          "safeArea": "96px sides, 180px top, 240px bottom",
+          "useFor": "Story title cards, reel covers and vertical promotional graphics."
+        }
+      ],
+      "contentPillars": [
+        "Digitale duidelijkheid",
+        "Websiteconversie",
+        "Webshopflow",
+        "AI-workflows",
+        "Procestransparantie",
+        "Case-study proof"
+      ],
+      "copyPatterns": [
+        {
+          "name": "Problem insight",
+          "pattern": "Start with a concrete friction point, then name the clearer next step.",
+          "example": "Je website voelt niet traag door een detail. Vaak mist de hele flow richting actie."
+        },
+        {
+          "name": "Practical contrast",
+          "pattern": "Use a short not-this-but-that contrast.",
+          "example": "Niet meer pagina's. Wel betere keuzes per pagina."
+        },
+        {
+          "name": "Process proof",
+          "pattern": "Show what happens within 48 hours or in the first step.",
+          "example": "Binnen 48 uur weet je welke stap logisch is: verbeteren, herwerken of opnieuw bouwen."
+        }
+      ],
+      "layoutRecipes": [
+        {
+          "name": "Insight post",
+          "structure": "Small uppercase label, oversized Bespoke headline, one DM Sans support line, small upshift wordmark.",
+          "palette": "Warm Ash Cream background, Ink Brown text, one Signal Teal line or dot."
+        },
+        {
+          "name": "Carousel cover",
+          "structure": "Pillar label, big payoff headline, slide count marker, restrained teal underline.",
+          "palette": "Warm Paper or Ink Brown background with high contrast text."
+        },
+        {
+          "name": "Case-study proof",
+          "structure": "Before/after tension, one screenshot or project crop, short lesson, small CTA.",
+          "palette": "Warm background with dark image overlay or Ink Brown proof band."
+        }
+      ],
+      "rules": [
+        "Use one strong message per social asset.",
+        "Use Signal Teal for one action, proof cue or divider only.",
+        "Use the Brand Grid as a subtle warm-background texture when an asset needs a clear website connection.",
+        "Keep important text inside the safe area.",
+        "Prefer real screenshots, project crops and workshop imagery over stock.",
+        "Do not use pure white, generic SaaS gradients, robot AI imagery, high-contrast grid backgrounds or oversized metric-template posts."
+      ]
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Primary contact and conversion action.",
+      "html": "<button class=\"ds-btn-primary\">Bespreek je project</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border: none; border-radius: 9999px; cursor: pointer; background: #06c2a4; color: #16110f; padding: 0.95rem 1.4rem; font-family: 'DM Sans', Arial, Helvetica, sans-serif; font-weight: 600; box-shadow: 0 12px 28px rgba(6, 194, 164, 0.25); transition: background-color 180ms ease, transform 180ms ease, box-shadow 180ms ease; } .ds-btn-primary:hover { background: #049e86; transform: translateY(-2px); box-shadow: 0 16px 34px rgba(6, 194, 164, 0.35); } .ds-btn-primary:focus-visible { outline: 2px solid #06c2a4; outline-offset: 3px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Lower-priority exploration action.",
+      "html": "<button class=\"ds-btn-secondary\">Bekijk onze expertise</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border: 1px solid rgba(22, 17, 15, 0.12); border-radius: 9999px; cursor: pointer; background: #fffcf7; color: #16110f; padding: 0.95rem 1.4rem; font-family: 'DM Sans', Arial, Helvetica, sans-serif; font-weight: 600; box-shadow: 0 10px 22px rgba(22, 17, 15, 0.05); transition: background-color 180ms ease, border-color 180ms ease, transform 180ms ease; } .ds-btn-secondary:hover { border-color: rgba(22, 17, 15, 0.24); background: #f3ede3; transform: translateY(-2px); } .ds-btn-secondary:focus-visible { outline: 2px solid #06c2a4; outline-offset: 3px; }"
+    },
+    {
+      "name": "Surface Card",
+      "kind": "card",
+      "refersTo": "surface-card",
+      "description": "Warm translucent container for service, testimonial and content surfaces.",
+      "html": "<article class=\"ds-surface-card\"><p class=\"ds-label\">Aanpak</p><h3>Duidelijk van intake tot launch</h3><p>Een warm oppervlak met subtiele lift, bedoeld om inhoud te dragen zonder de pagina te verzwaren.</p></article>",
+      "css": ".ds-surface-card { border: 1px solid rgba(22, 17, 15, 0.12); border-radius: 32px; background: rgba(255, 252, 247, 0.82); color: #16110f; padding: 2rem; box-shadow: 0 12px 30px rgba(22, 17, 15, 0.04); font-family: 'DM Sans', Arial, Helvetica, sans-serif; } .ds-surface-card h3 { margin: 0.75rem 0 0; font-family: 'Bespoke Slab Variable', Arial, Helvetica, sans-serif; font-size: 1.875rem; line-height: 1.15; font-weight: 600; } .ds-surface-card p { color: #5f5751; line-height: 1.7; } .ds-label { margin: 0; color: #06c2a4; font-size: 0.875rem; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; }"
+    },
+    {
+      "name": "Navigation Link",
+      "kind": "nav",
+      "refersTo": "nav-link",
+      "description": "Header navigation item with restrained teal underline feedback.",
+      "html": "<a class=\"ds-nav-link\" href=\"#\">Expertise</a>",
+      "css": ".ds-nav-link { position: relative; cursor: pointer; color: #5f5751; padding-bottom: 2px; font-family: 'DM Sans', Arial, Helvetica, sans-serif; font-size: 0.875rem; font-weight: 500; text-decoration: none; transition: color 180ms ease; } .ds-nav-link::after { content: ''; position: absolute; left: 0; bottom: -2px; width: 100%; height: 2px; background: #06c2a4; border-radius: 1px; transform: scaleX(0); transform-origin: right; transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1); } .ds-nav-link:hover { color: #16110f; } .ds-nav-link:hover::after { transform: scaleX(1); transform-origin: left; } .ds-nav-link:focus-visible { outline: 2px solid #06c2a4; outline-offset: 3px; }"
+    },
+    {
+      "name": "Project Chip",
+      "kind": "chip",
+      "refersTo": "project-tag",
+      "description": "Small metadata tag used on image-backed project cards.",
+      "html": "<span class=\"ds-project-chip\">Case study</span>",
+      "css": ".ds-project-chip { display: inline-flex; align-items: center; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 9999px; background: rgba(255, 255, 255, 0.14); color: rgba(255, 255, 255, 0.88); padding: 0.25rem 0.75rem; font-family: 'DM Sans', Arial, Helvetica, sans-serif; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; }"
+    },
+    {
+      "name": "Social Quote Post",
+      "kind": "custom",
+      "refersTo": "social-square-post",
+      "description": "Square LinkedIn or Instagram post for a practical quote, insight or objection.",
+      "html": "<article class=\"ds-social-quote\"><p class=\"ds-social-label\">Digitale duidelijkheid</p><h1>Niet meer pagina's. Wel betere keuzes per pagina.</h1><p class=\"ds-social-foot\">upshift · websites, webshops en AI</p></article>",
+      "css": ".ds-social-quote { width: 1080px; height: 1080px; box-sizing: border-box; background-color: #f8f5ef; background-image: linear-gradient(to right, rgba(22, 17, 15, 0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(22, 17, 15, 0.06) 1px, transparent 1px); background-size: 36px 36px; color: #16110f; padding: 108px; display: flex; flex-direction: column; justify-content: space-between; font-family: 'DM Sans', Arial, Helvetica, sans-serif; border: 1px solid rgba(22, 17, 15, 0.12); } .ds-social-quote::before { content: ''; width: 112px; height: 8px; border-radius: 9999px; background: #06c2a4; display: block; } .ds-social-label { margin: 0; color: #5f5751; font-size: 28px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; } .ds-social-quote h1 { max-width: 790px; margin: 0; font-family: 'Bespoke Slab Variable', Arial, Helvetica, sans-serif; font-size: 96px; line-height: 0.98; letter-spacing: -0.04em; font-weight: 700; } .ds-social-foot { margin: 0; color: #5f5751; font-size: 30px; font-weight: 600; }"
+    },
+    {
+      "name": "Carousel Cover",
+      "kind": "custom",
+      "refersTo": "social-carousel-cover",
+      "description": "Carousel opening slide with one clear payoff and slide count.",
+      "html": "<article class=\"ds-carousel-cover\"><div><p>Websiteconversie</p><h1>Waarom bezoekers afhaken voordat ze contact opnemen</h1></div><span>01/05</span></article>",
+      "css": ".ds-carousel-cover { width: 1080px; height: 1080px; box-sizing: border-box; background: #16110f; color: #f8f5ef; padding: 96px; display: flex; flex-direction: column; justify-content: space-between; font-family: 'DM Sans', Arial, Helvetica, sans-serif; } .ds-carousel-cover p { margin: 0 0 34px; color: #06c2a4; font-size: 28px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; } .ds-carousel-cover h1 { max-width: 800px; margin: 0; font-family: 'Bespoke Slab Variable', Arial, Helvetica, sans-serif; font-size: 86px; line-height: 1.02; letter-spacing: -0.04em; font-weight: 700; } .ds-carousel-cover span { align-self: flex-end; border: 1px solid rgba(248, 245, 239, 0.24); border-radius: 9999px; padding: 14px 22px; color: rgba(248, 245, 239, 0.78); font-size: 28px; font-weight: 700; }"
+    },
+    {
+      "name": "Carousel Content Slide",
+      "kind": "custom",
+      "refersTo": "social-carousel-slide",
+      "description": "Educational carousel slide with one numbered point.",
+      "html": "<article class=\"ds-carousel-slide\"><p class=\"ds-step\">02</p><div><h2>Maak de volgende stap zichtbaar</h2><p>Een bezoeker beslist sneller wanneer de actie logisch voelt en weinig risico vraagt.</p></div><p class=\"ds-brand\">upshift</p></article>",
+      "css": ".ds-carousel-slide { width: 1080px; height: 1080px; box-sizing: border-box; background-color: #fffcf7; background-image: linear-gradient(to right, rgba(22, 17, 15, 0.045) 1px, transparent 1px), linear-gradient(to bottom, rgba(22, 17, 15, 0.045) 1px, transparent 1px); background-size: 36px 36px; color: #16110f; padding: 96px; display: grid; grid-template-rows: auto 1fr auto; font-family: 'DM Sans', Arial, Helvetica, sans-serif; border: 1px solid rgba(22, 17, 15, 0.12); } .ds-step { margin: 0; color: #06c2a4; font-family: 'Bespoke Slab Variable', Arial, Helvetica, sans-serif; font-size: 112px; line-height: 1; font-weight: 700; letter-spacing: -0.04em; } .ds-carousel-slide div { align-self: center; max-width: 760px; } .ds-carousel-slide h2 { margin: 0; font-family: 'Bespoke Slab Variable', Arial, Helvetica, sans-serif; font-size: 72px; line-height: 1.04; letter-spacing: -0.035em; font-weight: 700; } .ds-carousel-slide p:not(.ds-step):not(.ds-brand) { margin: 34px 0 0; color: #5f5751; font-size: 36px; line-height: 1.35; } .ds-brand { justify-self: end; margin: 0; color: #5f5751; font-size: 28px; font-weight: 700; }"
+    },
+    {
+      "name": "Case Study Proof Post",
+      "kind": "custom",
+      "refersTo": "social-case-proof",
+      "description": "Portrait social post that frames a before/after problem and one practical lesson.",
+      "html": "<article class=\"ds-case-proof\"><div class=\"ds-case-media\">Projectbeeld</div><div class=\"ds-case-copy\"><p>Case-study proof</p><h1>Van onduidelijke flow naar meer vertrouwen in de volgende stap.</h1><span>Bespreek je project</span></div></article>",
+      "css": ".ds-case-proof { width: 1200px; height: 1500px; box-sizing: border-box; background: #f8f5ef; color: #16110f; padding: 96px; display: grid; grid-template-rows: 48% 1fr; gap: 54px; font-family: 'DM Sans', Arial, Helvetica, sans-serif; } .ds-case-media { border-radius: 32px; border: 1px solid rgba(22, 17, 15, 0.12); background: linear-gradient(135deg, #f3ede3, #fffcf7); display: grid; place-items: center; color: #5f5751; font-size: 28px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; } .ds-case-copy p { margin: 0 0 28px; color: #06c2a4; font-size: 26px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; } .ds-case-copy h1 { margin: 0; font-family: 'Bespoke Slab Variable', Arial, Helvetica, sans-serif; font-size: 74px; line-height: 1.02; letter-spacing: -0.04em; font-weight: 700; } .ds-case-copy span { display: inline-flex; margin-top: 44px; border-radius: 9999px; background: #06c2a4; color: #16110f; padding: 18px 28px; font-size: 26px; font-weight: 700; }"
+    },
+    {
+      "name": "Story Cover",
+      "kind": "custom",
+      "refersTo": "social-story-cover",
+      "description": "Vertical Instagram story or reel cover with protected bottom CTA area.",
+      "html": "<article class=\"ds-story-cover\"><p>AI-workflows</p><h1>Automatiseer pas wanneer het proces helder is.</h1><span>Binnen 48 uur een volgende stap</span></article>",
+      "css": ".ds-story-cover { position: relative; width: 1080px; height: 1920px; box-sizing: border-box; background: #16110f; color: #f8f5ef; padding: 180px 96px 240px; display: flex; flex-direction: column; justify-content: center; gap: 52px; font-family: 'DM Sans', Arial, Helvetica, sans-serif; } .ds-story-cover::before { content: 'upshift'; position: absolute; left: 96px; top: 96px; color: rgba(248, 245, 239, 0.58); font-size: 30px; font-weight: 700; } .ds-story-cover p { margin: 0; color: #06c2a4; font-size: 30px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; } .ds-story-cover h1 { margin: 0; max-width: 820px; font-family: 'Bespoke Slab Variable', Arial, Helvetica, sans-serif; font-size: 104px; line-height: 1; letter-spacing: -0.045em; font-weight: 700; } .ds-story-cover span { display: inline-flex; align-self: flex-start; border-radius: 9999px; background: #f8f5ef; color: #16110f; padding: 20px 30px; font-size: 28px; font-weight: 700; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Clear Workshop",
+    "overview": "The upshift interface should feel like a focused project table: warm, bright, technically precise and easy to enter. The brand sells clarity and speed, so the design uses generous space, strong display typography, concise copy and direct action paths.",
+    "keyCharacteristics": [
+      "Warm off-white base with deep brown text and disciplined teal actions.",
+      "Large expressive headlines balanced by compact, readable body copy.",
+      "CSS-first motion that supports perceived quality without slowing the page.",
+      "Social media assets use one strong message, one proof cue and one restrained brand mark."
+    ],
+    "rules": [
+      {
+        "name": "The One Signal Rule",
+        "body": "Teal is for action, focus and proof. Do not expand it into a full teal theme.",
+        "section": "colors"
+      },
+      {
+        "name": "The Feed Contrast Rule",
+        "body": "Social posts may use Ink Brown as a full background, but keep a warm surface or warm text block in the composition.",
+        "section": "colors"
+      },
+      {
+        "name": "The Grid Texture Rule",
+        "body": "The Brand Grid uses 1px warm-brown lines on a 36px rhythm. Use it as a subtle warm-background texture, never as a loud decorative pattern.",
+        "section": "patterns"
+      },
+      {
+        "name": "The Quiet Body Rule",
+        "body": "If a paragraph is doing the same work as its heading, cut it or make it more concrete.",
+        "section": "typography"
+      },
+      {
+        "name": "The Social Headline Rule",
+        "body": "Social graphics need one dominant line, usually 5 to 10 words, supported by one proof cue or next step.",
+        "section": "typography"
+      }
+    ],
+    "dos": [
+      "Do use Signal Teal for primary action, focus and proof cues.",
+      "Do keep the page warm, bright and legible with Warm Ash Cream and Ink Brown.",
+      "Do keep motion transform-based and respectful of prefers-reduced-motion.",
+      "Do make social posts feel like website fragments: warm surface, strong type, one teal signal and a clear idea.",
+      "Do write Dutch/Flemish B2B social copy by default.",
+      "Do use the Brand Grid on warm hero-style social backgrounds when the asset needs a clear website connection."
+    ],
+    "donts": [
+      "Don't use generic AI-template esthetiek, paarse SaaS-gradients or neon-on-black category reflexes.",
+      "Don't create card-in-card layouts or endless identical card grids.",
+      "Don't use decorative glassmorphism as the default surface treatment.",
+      "Don't use pure white social backgrounds.",
+      "Don't create social posts around oversized standalone metrics without context.",
+      "Don't use stock-looking business imagery, generic robot AI graphics or floating dashboard mockups disconnected from upshift's real work.",
+      "Don't make the Brand Grid high-contrast, teal or layered over busy imagery."
+    ]
+  }
+}

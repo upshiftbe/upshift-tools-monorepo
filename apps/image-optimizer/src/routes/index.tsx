@@ -115,26 +115,32 @@ function App() {
 
   return (
     <div className='min-h-screen bg-background text-foreground'>
-      {/* Hero */}
-      <section className='px-6 pt-20 pb-10 sm:pt-24 sm:pb-12 text-center'>
-        <div className='flex items-center justify-center gap-3 mb-4'>
-          <ImageDown className='h-10 w-10 text-primary' aria-hidden />
-          <h1 className='text-3xl font-bold tracking-tight sm:text-4xl text-foreground'>Image Optimizer</h1>
-        </div>
-        <p className='text-base text-muted-foreground max-w-lg mx-auto leading-relaxed'>
-          Compress and convert images to WebP or AVIF — entirely in your browser. Nothing is ever uploaded to a server.
-        </p>
-      </section>
+      <section className='mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10'>
+        <header className='mb-6 flex flex-col gap-3 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between'>
+          <div className='max-w-2xl'>
+            <p className='text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground'>Image Optimizer</p>
+            <h1 className='mt-2 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl'>Compress browser-side images</h1>
+            <p className='mt-3 text-sm leading-6 text-muted-foreground'>
+              Convert images to WebP or AVIF in the browser. Files stay local, and results are ready for direct download.
+            </p>
+          </div>
+          {files.length > 0 && (
+            <div className='rounded-[var(--radius)] border border-border bg-card px-3 py-2 text-sm text-muted-foreground'>
+              <span className='font-semibold text-foreground'>{doneCount}</span> of{' '}
+              <span className='font-semibold text-foreground'>{files.length}</span> converted
+            </div>
+          )}
+        </header>
 
-      <section className='max-w-3xl mx-auto px-4 sm:px-6 pb-16 lg:pb-20 space-y-5'>
-        {/* Drop zone */}
+        <div className='grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start'>
+          <div className='space-y-5'>
         <div
           className={[
-            'rounded-2xl border-2 border-dashed transition-all duration-200 cursor-pointer',
-            'flex flex-col items-center justify-center gap-3 p-10 sm:p-14 text-center',
+            'rounded-[var(--radius-xl)] border border-dashed transition duration-200 cursor-pointer',
+            'flex min-h-[260px] flex-col items-center justify-center gap-4 p-8 text-center sm:p-10',
             isDragging
-              ? 'border-primary bg-primary/5 scale-[1.01]'
-              : 'border-border bg-muted/30 hover:border-primary/50 hover:bg-muted/50',
+              ? 'border-[var(--brand-accent-strong)] bg-accent shadow-[var(--shadow-md)]'
+              : 'border-input bg-card hover:border-[var(--brand-accent-strong)]/50 hover:bg-accent/60',
           ].join(' ')}
           onDragOver={(e) => {
             e.preventDefault();
@@ -148,16 +154,15 @@ function App() {
           aria-label='Upload images to optimise'
           onKeyDown={(e) => e.key === 'Enter' && inputRef.current?.click()}
         >
-          <Upload
-            className={`h-10 w-10 transition-colors ${isDragging ? 'text-primary' : 'text-muted-foreground'}`}
-            aria-hidden
-          />
+          <span className='flex h-14 w-14 items-center justify-center rounded-[var(--radius)] bg-accent text-[var(--brand-accent-strong)]'>
+            <Upload className='h-6 w-6' aria-hidden />
+          </span>
           <div>
             <p className='font-semibold text-foreground'>
               {isDragging ? 'Drop to convert' : 'Drag & drop images here'}
             </p>
-            <p className='text-sm text-muted-foreground mt-1'>
-              or click to browse &mdash; JPEG, PNG, WebP, GIF, BMP, TIFF
+            <p className='mt-1 text-sm text-muted-foreground'>
+              Or click to browse. JPEG, PNG, WebP, GIF, BMP, and TIFF are supported.
             </p>
           </div>
           <input
@@ -171,15 +176,17 @@ function App() {
           />
         </div>
 
-        {/* Settings */}
-        <Card className='shadow-[var(--shadow-sm)]'>
+          </div>
+
+          <aside className='space-y-5 lg:sticky lg:top-20'>
+        <Card>
           <CardHeader className='pb-2'>
             <CardTitle className='flex items-center gap-2 text-base font-semibold text-foreground'>
-              <Settings2 className='h-4 w-4 text-primary shrink-0' />
-              Settings
+              <Settings2 className='h-4 w-4 shrink-0 text-[var(--brand-accent-strong)]' />
+              Output settings
             </CardTitle>
           </CardHeader>
-          <CardContent className='flex flex-wrap items-end gap-6'>
+          <CardContent className='space-y-5'>
             <div className='space-y-2'>
               <Label className='text-sm font-medium'>Output format</Label>
               <div className='flex gap-2'>
@@ -190,7 +197,7 @@ function App() {
                     variant={format === f ? 'default' : 'outline'}
                     size='sm'
                     onClick={() => setFormat(f)}
-                    className='uppercase text-xs tracking-wide font-semibold'
+                    className='uppercase text-xs font-semibold tracking-wide'
                   >
                     {f}
                   </Button>
@@ -198,10 +205,10 @@ function App() {
               </div>
             </div>
 
-            <div className='flex-1 min-w-[180px] space-y-2'>
+            <div className='space-y-2'>
               <Label className='text-sm font-medium flex items-center justify-between'>
                 Quality
-                <span className='font-semibold tabular-nums text-primary'>{quality}%</span>
+                <span className='font-semibold tabular-nums text-[var(--brand-accent-strong)]'>{quality}%</span>
               </Label>
               <input
                 type='range'
@@ -209,7 +216,7 @@ function App() {
                 max={100}
                 value={quality}
                 onChange={(e) => setQuality(Number(e.target.value))}
-                className='w-full accent-[var(--primary)] cursor-pointer'
+                className='w-full cursor-pointer accent-[var(--brand-accent-strong)]'
                 aria-label={`Quality: ${quality}%`}
               />
               <div className='flex justify-between text-xs text-muted-foreground select-none'>
@@ -219,15 +226,17 @@ function App() {
             </div>
           </CardContent>
         </Card>
+          </aside>
+        </div>
 
-        {/* Results */}
         {files.length > 0 && (
-          <div className='space-y-3'>
-            <div className='flex items-center justify-between'>
-              <p className='text-sm font-semibold text-foreground'>
-                {doneCount} / {files.length} converted
+          <div className='mt-6 space-y-3'>
+            <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
+              <p className='text-sm font-semibold text-foreground flex items-center gap-2'>
+                <ImageDown className='h-4 w-4 text-[var(--brand-accent-strong)]' />
+                Converted files
               </p>
-              <div className='flex gap-2'>
+              <div className='flex flex-wrap gap-2'>
                 {doneCount > 1 && (
                   <Button variant='outline' size='sm' onClick={handleDownloadAll} className='gap-2'>
                     <ArchiveIcon className='h-4 w-4' />
@@ -266,20 +275,17 @@ function FileRow({ item, format, onRemove }: { item: ProcessedFile; format: Outp
   };
 
   return (
-    <div className='file-row-enter flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 text-sm'>
-      {/* Status */}
+    <div className='file-row-enter grid gap-3 rounded-[var(--radius)] border border-border bg-card px-4 py-3 text-sm sm:grid-cols-[auto_minmax(0,1fr)_auto_auto] sm:items-center'>
       <span className='shrink-0' aria-hidden>
-        {item.status === 'processing' && <Loader2 className='h-5 w-5 animate-spin text-primary' />}
-        {item.status === 'done' && <CheckCircle2 className='h-5 w-5 text-emerald-500' />}
+        {item.status === 'processing' && <Loader2 className='h-5 w-5 animate-spin text-[var(--brand-accent-strong)]' />}
+        {item.status === 'done' && <CheckCircle2 className='h-5 w-5 text-[var(--success)]' />}
         {item.status === 'error' && <AlertCircle className='h-5 w-5 text-destructive' />}
       </span>
 
-      {/* Filename */}
       <span className='flex-1 truncate font-medium text-foreground min-w-0'>{item.file.name}</span>
 
-      {/* Size info */}
       {item.status === 'done' && item.result && (
-        <span className='flex items-center gap-2 shrink-0 text-xs text-muted-foreground'>
+        <span className='flex flex-wrap items-center gap-2 text-xs text-muted-foreground sm:justify-end'>
           <span>{formatBytes(item.result.originalSize)}</span>
           <span aria-hidden>→</span>
           <span className='font-semibold text-foreground'>{formatBytes(item.result.outputSize)}</span>
@@ -288,7 +294,7 @@ function FileRow({ item, format, onRemove }: { item: ProcessedFile; format: Outp
               className={[
                 'font-semibold tabular-nums rounded-full px-2 py-0.5 text-xs',
                 savings > 0
-                  ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                  ? 'bg-[var(--success-soft)] text-[var(--success)]'
                   : 'bg-muted text-muted-foreground',
               ].join(' ')}
             >
@@ -299,11 +305,10 @@ function FileRow({ item, format, onRemove }: { item: ProcessedFile; format: Outp
       )}
 
       {item.status === 'error' && (
-        <span className='text-xs text-destructive shrink-0 max-w-[180px] truncate'>{item.error}</span>
+        <span className='text-xs text-destructive sm:max-w-[220px] sm:truncate'>{item.error}</span>
       )}
 
-      {/* Actions */}
-      <div className='flex gap-1 shrink-0 ml-1'>
+      <div className='flex gap-1 sm:justify-end'>
         {item.status === 'done' && (
           <Button variant='outline' size='sm' onClick={handleDownload} className='h-7 gap-1.5 px-2.5 text-xs'>
             <Download className='h-3.5 w-3.5' />

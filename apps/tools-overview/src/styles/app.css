@@ -2,19 +2,12 @@
 @import '@upshift-tools/shared-ui/theme.css';
 @source "../../../../libs/shared-ui/src";
 
-@custom-variant dark (&:is(.dark *));
-
 * {
   @apply border-border;
 }
 body {
   @apply bg-background text-foreground m-0 antialiased;
-  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-}
-
-/* tools-overview: display font for editorial hub */
-.font-display {
-  font-family: 'Syne', 'Outfit', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
 }
 
 /* Staggered card reveal – respect reduced motion */
@@ -30,7 +23,7 @@ body {
 }
 .tools-card-reveal {
   opacity: 0;
-  animation: tools-card-in 0.5s ease-out forwards;
+  animation: tools-card-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 @media (prefers-reduced-motion: reduce) {
   .tools-card-reveal {

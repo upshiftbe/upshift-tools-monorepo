@@ -14,8 +14,10 @@ function RootComponent() {
         navbar={{
           logo: (
             <>
-              <ImageDown className='h-6 w-6 text-primary' />
-              <span className='font-bold text-lg tracking-tight'>Image Optimizer</span>
+              <span className='flex h-8 w-8 items-center justify-center rounded-[var(--radius)] bg-primary text-primary-foreground'>
+                <ImageDown className='h-4 w-4' />
+              </span>
+              <span className='text-base font-semibold tracking-tight'>Image Optimizer</span>
             </>
           ),
           logoHref: '/',

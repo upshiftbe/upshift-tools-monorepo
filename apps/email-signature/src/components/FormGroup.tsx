@@ -14,10 +14,10 @@ type FormGroupProps = {
 
 export function FormGroup({ group, formState, errors, onChange, onBlur }: FormGroupProps) {
   return (
-    <Card className="bg-muted/30">
+    <Card className="bg-muted/30 shadow-none">
       <CardHeader className="pb-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">{group.title}</p>
-        <p className="text-sm text-muted-foreground">{group.description}</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">{group.title}</p>
+        <p className="text-sm leading-6 text-muted-foreground">{group.description}</p>
       </CardHeader>
       <CardContent className="pt-0">
         <div className="grid gap-4 sm:grid-cols-2">

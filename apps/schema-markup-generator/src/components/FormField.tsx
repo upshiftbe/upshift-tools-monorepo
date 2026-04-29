@@ -33,7 +33,7 @@ export function FormField<T extends Record<string, unknown>>({
         {label}
         {required && <span className="text-destructive ml-1">*</span>}
       </Label>
-      {description && <p className="text-sm text-muted-foreground">{description}</p>}
+      {description && <p className="text-sm leading-6 text-muted-foreground">{description}</p>}
       {type === 'textarea' ? (
         <Textarea id={fieldId} {...register(name)} placeholder={placeholder} rows={rows} className={error ? 'border-destructive' : ''} />
       ) : type === 'select' && options ? (
@@ -52,7 +52,7 @@ export function FormField<T extends Record<string, unknown>>({
       ) : (
         <Input id={fieldId} type={type} {...register(name)} placeholder={placeholder} className={error ? 'border-destructive' : ''} />
       )}
-      {error && <p className="text-sm text-destructive">{error.message}</p>}
+      {error && <p className="text-sm text-destructive" role="alert">{error.message}</p>}
     </div>
   )
 }

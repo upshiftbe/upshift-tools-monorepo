@@ -13,7 +13,7 @@ type SignatureFormProps = {
 
 export function SignatureForm({ formState, errors, onFieldChange, onFieldBlur, onReset }: SignatureFormProps) {
   return (
-    <Card className="shadow-[var(--shadow-sm)]">
+    <Card>
       <CardHeader className="space-y-4 pb-2">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="space-y-1">

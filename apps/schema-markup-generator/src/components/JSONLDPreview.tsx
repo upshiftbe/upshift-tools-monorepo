@@ -29,14 +29,15 @@ export const JSONLDPreview = ({ data }: JSONLDPreviewProps) => {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>JSON-LD Output</CardTitle>
+          <CardTitle>JSON-LD output</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col items-center gap-3 py-8 text-center">
-            <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
-              <Copy className="h-5 w-5 text-muted-foreground/50" />
+          <div className="flex min-h-[260px] flex-col items-center justify-center gap-3 rounded-[var(--radius)] border border-dashed border-input bg-muted/40 px-6 py-8 text-center">
+            <div className="flex h-11 w-11 items-center justify-center rounded-[var(--radius)] bg-accent">
+              <Copy className="h-5 w-5 text-[var(--brand-accent-strong)]" />
             </div>
-            <p className="text-sm text-muted-foreground">Fill out the form to generate JSON-LD markup</p>
+            <p className="text-sm font-medium text-foreground">Your markup will appear here</p>
+            <p className="max-w-xs text-sm text-muted-foreground">Fill the required fields to generate copy-ready JSON-LD.</p>
           </div>
         </CardContent>
       </Card>
@@ -47,7 +48,7 @@ export const JSONLDPreview = ({ data }: JSONLDPreviewProps) => {
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>JSON-LD Output</CardTitle>
+          <CardTitle>JSON-LD output</CardTitle>
           <Button
             variant="outline"
             size="sm"
@@ -56,8 +57,8 @@ export const JSONLDPreview = ({ data }: JSONLDPreviewProps) => {
           >
             {status === 'copied' ? (
               <>
-                <Check className="h-4 w-4 text-[var(--brand-accent)]" />
-                <span className="text-[var(--brand-accent)]">Copied!</span>
+                <Check className="h-4 w-4 text-[var(--brand-accent-strong)]" />
+                <span className="text-[var(--brand-accent-strong)]">Copied</span>
               </>
             ) : status === 'error' ? (
               <>
@@ -74,10 +75,10 @@ export const JSONLDPreview = ({ data }: JSONLDPreviewProps) => {
         </div>
       </CardHeader>
       <CardContent>
-        <pre className="bg-muted p-4 rounded-md overflow-auto text-sm schema-code-block">
+        <pre className="max-h-[520px] overflow-auto rounded-[var(--radius)] border border-border bg-muted p-4 text-sm schema-code-block">
           <code>{JSON.stringify(data, null, 2)}</code>
         </pre>
-        <div className="mt-4 p-4 bg-[var(--brand-accent)]/5 border border-[var(--brand-accent)]/15 rounded-md">
+        <div className="mt-4 rounded-[var(--radius)] border border-[var(--brand-accent-strong)]/20 bg-accent p-4">
           <p className="text-sm text-foreground/80">
             <strong>How to use:</strong> Copy the JSON-LD code above and paste it into a{' '}
             <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">

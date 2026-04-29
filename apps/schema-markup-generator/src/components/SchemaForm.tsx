@@ -118,8 +118,8 @@ export const SchemaForm = ({ schemaType, onDataChange }: SchemaFormProps) => {
             <FormField label="Brand" name="brand" register={methods.register} error={e(errors.brand)} />
             <FormField label="SKU" name="sku" register={methods.register} error={e(errors.sku)} />
             <FormField label="Category" name="category" register={methods.register} error={e(errors.category)} />
-            <div className="space-y-4 border-t pt-4">
-              <h3 className="font-semibold">Offer Details</h3>
+            <div className="space-y-4 border-t border-border pt-4">
+              <h3 className="text-sm font-semibold text-foreground">Offer details</h3>
               <FormField label="Price" name="offers.price" register={methods.register} error={e((errors.offers as ErrorsObj)?.price)} placeholder="29.99" />
               <FormField label="Currency" name="offers.priceCurrency" register={methods.register} error={e((errors.offers as ErrorsObj)?.priceCurrency)} placeholder="USD" />
               <FormField
@@ -144,7 +144,7 @@ export const SchemaForm = ({ schemaType, onDataChange }: SchemaFormProps) => {
             <FormField label="Business Name" name="name" register={methods.register} error={e(errors.name)} required />
             <FormField label="Description" name="description" register={methods.register} error={e(errors.description)} type="textarea" />
             <FormField label="Phone Number" name="telephone" register={methods.register} error={e(errors.telephone)} />
-            <div className="space-y-4 border-t pt-4">
+            <div className="space-y-4 border-t border-border pt-4">
               <h3 className="font-semibold">Address</h3>
               <FormField label="Street Address" name="address.streetAddress" register={methods.register} error={e((errors.address as ErrorsObj)?.streetAddress)} />
               <FormField label="City" name="address.addressLocality" register={methods.register} error={e((errors.address as ErrorsObj)?.addressLocality)} />
@@ -199,7 +199,7 @@ export const SchemaForm = ({ schemaType, onDataChange }: SchemaFormProps) => {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle>{schemaType} Schema</CardTitle>
+              <CardTitle>{schemaType} schema</CardTitle>
               <Button type="button" variant="outline" onClick={handleReset}>
                 Reset
               </Button>

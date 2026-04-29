@@ -17,13 +17,13 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "default", size = "default", ...props }, ref) => (
     <button
       className={cn(
-        "inline-flex items-center justify-center whitespace-nowrap rounded-[var(--radius)] text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+        "inline-flex items-center justify-center whitespace-nowrap rounded-[var(--radius)] text-sm font-semibold ring-offset-background transition-[background-color,border-color,color,box-shadow,transform] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
         {
-          "bg-primary text-primary-foreground font-semibold shadow-sm hover:bg-primary/90":
+          "bg-primary text-primary-foreground shadow-[var(--shadow-primary)] hover:bg-[var(--brand-accent-strong)] hover:shadow-[var(--shadow-primary-hover)] active:translate-y-px":
             variant === "default",
         },
         {
-          "bg-foreground text-background font-semibold shadow-sm hover:bg-foreground/90":
+          "bg-foreground text-background shadow-sm hover:bg-foreground/90":
             variant === "dark",
         },
         {
@@ -31,11 +31,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             variant === "destructive",
         },
         {
-          "border-2 border-input bg-background hover:bg-accent hover:text-accent-foreground":
+          "border border-input bg-card hover:border-[var(--brand-accent-strong)]/40 hover:bg-accent hover:text-accent-foreground":
             variant === "outline",
         },
         {
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80 font-semibold":
+          "bg-secondary text-secondary-foreground hover:bg-muted":
             variant === "secondary",
         },
         { "hover:bg-accent hover:text-accent-foreground": variant === "ghost" },

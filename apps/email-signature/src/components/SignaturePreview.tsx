@@ -85,18 +85,18 @@ export function SignaturePreview({ values, previewRef, onReset, onCopy }: Signat
   }, [copyTextToClipboard])
 
   return (
-    <Card className="bg-card text-card-foreground lg:sticky lg:top-8 shadow-[var(--shadow-md)] ring-1 ring-border/50">
+    <Card className="bg-card text-card-foreground">
       <CardContent className="space-y-5 px-6 sm:px-8 pt-6 pb-6">
-        <div className="flex items-center gap-2 rounded-lg bg-muted/60 px-4 py-2.5">
+        <div className="flex items-center gap-2 rounded-[var(--radius)] bg-muted/60 px-4 py-2.5">
           <span className="text-sm font-semibold text-foreground">Preview</span>
           <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden />
           <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/50" aria-hidden />
           <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/30" aria-hidden />
         </div>
-        <div className="overflow-hidden rounded-xl border border-border bg-muted shadow-[var(--shadow-sm)]">
+        <div className="overflow-hidden rounded-[var(--radius)] border border-border bg-muted shadow-[var(--shadow-sm)]">
           <div className="flex items-center gap-3 border-b border-border bg-background px-4 py-3 text-sm">
             <div className="flex flex-col gap-1">
-              <span className="text-xs font-semibold uppercase tracking-wider text-primary">Email preview</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-[var(--brand-accent-strong)]">Email preview</span>
               <span className="font-semibold">New message</span>
             </div>
           </div>
@@ -105,7 +105,7 @@ export function SignaturePreview({ values, previewRef, onReset, onCopy }: Signat
               <span className="w-14 text-right text-[11px] font-semibold">From</span>
               <div className="flex w-full items-center rounded-md border border-input bg-muted px-3 py-2">
                 <span>hello@upshift.be</span>
-                <span className="ml-auto rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">Your info</span>
+                <span className="ml-auto rounded-full bg-accent px-2 py-0.5 text-[10px] font-semibold text-[var(--brand-accent-strong)]">Your info</span>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -157,11 +157,11 @@ export function SignaturePreview({ values, previewRef, onReset, onCopy }: Signat
           onClick={handleCopy}
         >
           {copyStatus === 'success' ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-          {copyStatus === 'success' ? 'Copied!' : 'Copy signature'}
+          {copyStatus === 'success' ? 'Copied' : 'Copy signature'}
         </Button>
         {copyStatus === 'success' && (
           <div className="flex items-center justify-between gap-2 px-1">
-            <p className="text-xs text-[var(--brand-accent)]">Signature copied successfully!</p>
+            <p className="text-xs text-[var(--brand-accent-strong)]">Signature copied successfully.</p>
             <button type="button" onClick={handleReset} className="text-xs text-muted-foreground underline hover:text-foreground focus-visible:outline focus-visible:ring-2 focus-visible:ring-ring">
               Reset form
             </button>

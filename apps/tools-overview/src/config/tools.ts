@@ -19,11 +19,11 @@ export const TOOLS: Tool[] = [
     id: 'qr-code-creator',
     name: 'QR Code Creator',
     description:
-      'Create and customize QR codes instantly. From-scratch encoder, no external libraries — export as SVG or PNG.',
+      'Create and customize QR codes instantly. From-scratch encoder, no external libraries. Export as SVG or PNG.',
     icon: 'QrCode',
     devPort: 3011,
     prodUrl: APP_URLS.QR_CODE_CREATOR,
-    color: 'from-cyan-500 to-blue-600',
+    color: 'teal',
     pastel: 'violet',
   },
   {
@@ -34,7 +34,7 @@ export const TOOLS: Tool[] = [
     icon: 'Mail',
     devPort: 3002,
     prodUrl: APP_URLS.EMAIL_SIGNATURE,
-    color: 'from-emerald-500 to-teal-600',
+    color: 'teal',
     pastel: 'amber',
   },
   {
@@ -45,7 +45,7 @@ export const TOOLS: Tool[] = [
     icon: 'Code2',
     devPort: 3003,
     prodUrl: APP_URLS.SCHEMA_MARKUP_GENERATOR,
-    color: 'from-violet-500 to-purple-600',
+    color: 'teal',
     pastel: 'rose',
   },
   {
@@ -56,7 +56,7 @@ export const TOOLS: Tool[] = [
     icon: 'ImageDown',
     devPort: 3004,
     prodUrl: APP_URLS.IMAGE_OPTIMIZER,
-    color: 'from-orange-500 to-rose-500',
+    color: 'teal',
     pastel: 'amber',
   },
 ];

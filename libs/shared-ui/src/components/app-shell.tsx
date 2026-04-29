@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { cn } from '../lib/utils';
-import { ThemeToggle } from './theme-toggle';
 
 export interface NavLink {
   label: string;
@@ -43,7 +42,7 @@ const DEFAULT_FOOTER = (
       href='https://upshift.be'
       target='_blank'
       rel='noopener noreferrer'
-      className='font-semibold text-[var(--brand-accent)] transition hover:text-[var(--brand-accent-dark)]'
+      className='font-semibold text-[var(--brand-accent-strong)] transition hover:text-[var(--brand-accent)]'
     >
       Upshift
     </a>
@@ -53,7 +52,7 @@ const DEFAULT_FOOTER = (
 const NAVBAR_STYLES = {
   default: 'border-b border-border shadow-[0_1px_0_0_var(--border)]',
   soft: 'border-b border-border shadow-[var(--shadow-sm)]',
-  sharp: 'border-b-2 border-border',
+  sharp: 'border-b border-border',
 } as const;
 
 function Navbar({
@@ -66,13 +65,13 @@ function Navbar({
   return (
     <header
       className={cn(
-        'sticky top-0 z-50 flex items-center justify-between bg-[var(--navbar)]/95 px-4 py-3 backdrop-blur md:px-6',
+        'sticky top-0 z-50 flex items-center justify-between bg-[var(--navbar)] px-4 py-3 backdrop-blur-md md:px-6',
         NAVBAR_STYLES[variant],
       )}
     >
       <a
         href={config.logoHref}
-        className='flex items-center gap-2.5 text-[var(--navbar-foreground)] transition hover:opacity-90'
+        className='flex items-center gap-2.5 rounded-[var(--radius)] text-[var(--navbar-foreground)] transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background'
       >
         {config.logo}
       </a>
@@ -83,14 +82,13 @@ function Navbar({
               <a
                 key={link.href}
                 href={link.href}
-                className='text-sm font-medium text-[var(--navbar-foreground)]/80 transition hover:text-[var(--navbar-foreground)]'
+                className='rounded-[var(--radius)] px-2 py-1 text-sm font-medium text-[var(--navbar-foreground)]/72 transition hover:bg-accent hover:text-[var(--navbar-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background'
               >
                 {link.label}
               </a>
             ))}
           </nav>
         )}
-        <ThemeToggle />
       </div>
     </header>
   );
@@ -99,7 +97,7 @@ function Navbar({
 const FOOTER_STYLES = {
   default: 'border-t border-border shadow-[0_-1px_0_0_var(--border)]',
   soft: 'border-t border-border shadow-[var(--shadow-sm)]',
-  sharp: 'border-t-2 border-border',
+  sharp: 'border-t border-border',
 } as const;
 
 function Footer({
@@ -111,8 +109,8 @@ function Footer({
 }) {
   const content = config?.content ?? DEFAULT_FOOTER;
   return (
-    <footer className={cn('bg-[var(--navbar)]/95 px-4 py-4 backdrop-blur md:px-6', FOOTER_STYLES[variant])}>
-      <div className='mx-auto flex max-w-6xl items-center justify-center text-[var(--navbar-foreground)]/90 [&_a]:text-[var(--brand-accent)] [&_a]:hover:text-[var(--brand-accent-dark)]'>
+    <footer className={cn('bg-[var(--navbar)] px-4 py-4 backdrop-blur-md md:px-6', FOOTER_STYLES[variant])}>
+      <div className='mx-auto flex max-w-6xl items-center justify-center text-[var(--navbar-foreground)]/90 [&_a]:text-[var(--brand-accent-strong)] [&_a]:hover:text-[var(--brand-accent)]'>
         {content}
       </div>
     </footer>
@@ -130,7 +128,7 @@ export const AppShell = React.forwardRef<HTMLDivElement, AppShellProps>(
     return (
       <div
         ref={ref}
-        className={cn('flex min-h-screen flex-col text-foreground page-gradient-bg', className)}
+        className={cn('flex min-h-screen flex-col text-foreground page-bg', className)}
         data-shell-variant={variant}
       >
         {navbar &&
@@ -142,8 +140,8 @@ export const AppShell = React.forwardRef<HTMLDivElement, AppShellProps>(
         <main className={cn('relative z-10 flex-1', mainClassName)}>{children}</main>
         {showFooter &&
           (isCustomFooterNode ? (
-            <footer className={cn('bg-[var(--navbar)]/95 px-4 py-4 backdrop-blur md:px-6', FOOTER_STYLES[variant])}>
-              <div className='mx-auto flex max-w-6xl items-center justify-center text-[var(--navbar-foreground)] [&_a]:text-[var(--brand-accent)]'>
+            <footer className={cn('bg-[var(--navbar)] px-4 py-4 backdrop-blur-md md:px-6', FOOTER_STYLES[variant])}>
+              <div className='mx-auto flex max-w-6xl items-center justify-center text-[var(--navbar-foreground)] [&_a]:text-[var(--brand-accent-strong)]'>
                 {footer}
               </div>
             </footer>

@@ -14,8 +14,10 @@ function RootComponent() {
         navbar={{
           logo: (
             <>
-              <Code2 className="h-6 w-6 text-primary" />
-              <span className="font-bold text-lg tracking-tight">
+              <span className="flex h-8 w-8 items-center justify-center rounded-[var(--radius)] bg-primary text-primary-foreground">
+                <Code2 className="h-4 w-4" />
+              </span>
+              <span className="text-base font-semibold tracking-tight">
                 Schema Markup
               </span>
             </>

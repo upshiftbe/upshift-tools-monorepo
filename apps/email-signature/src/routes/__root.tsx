@@ -15,8 +15,10 @@ function RootComponent() {
         navbar={{
           logo: (
             <>
-              <Mail className="h-6 w-6 text-primary" />
-              <span className="font-bold text-lg tracking-tight">
+              <span className="flex h-8 w-8 items-center justify-center rounded-[var(--radius)] bg-primary text-primary-foreground">
+                <Mail className="h-4 w-4" />
+              </span>
+              <span className="text-base font-semibold tracking-tight">
                 Email Signature
               </span>
             </>
@@ -46,7 +48,7 @@ function RootComponent() {
                   href="https://upshift.be"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-sm font-semibold text-primary transition-colors hover:text-primary/90 focus-visible:outline focus-visible:ring-2 focus-visible:ring-ring"
+                  className="rounded-sm font-semibold text-[var(--brand-accent-strong)] transition-colors hover:text-primary focus-visible:outline focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   Upshift
                 </a>
@@ -55,7 +57,7 @@ function RootComponent() {
                 Bugs? Drop a note at{" "}
                 <a
                   href="mailto:hello@upshift.be"
-                  className="font-semibold text-primary transition-colors hover:text-primary/90 focus-visible:outline focus-visible:ring-2 focus-visible:ring-ring"
+                  className="font-semibold text-[var(--brand-accent-strong)] transition-colors hover:text-primary focus-visible:outline focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   hello@upshift.be
                 </a>

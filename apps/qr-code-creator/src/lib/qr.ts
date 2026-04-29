@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * QR Code Generator — built from scratch (no external libraries).
+ * QR Code Generator: built from scratch (no external libraries).
  *
  * Implements the full QR code encoding pipeline per ISO 18004:
  *   GF(256) arithmetic → Reed-Solomon EC → byte-mode encoding →
@@ -181,7 +181,7 @@ const getMinVersion = (byteLen: number, ec: ErrorCorrectionLevel): number => {
 }
 
 // ────────────────────────────────────────────────────────────
-// Data encoding (byte mode only — covers all UTF-8)
+// Data encoding (byte mode only, covers all UTF-8)
 // ────────────────────────────────────────────────────────────
 
 const encodeData = (
@@ -436,7 +436,7 @@ const applyMask = (
 const calcPenalty = (mod: boolean[][], size: number): number => {
   let pen = 0
 
-  // Rule 1 — runs of 5+ same-colour modules (rows then cols)
+  // Rule 1: runs of 5+ same-color modules (rows then cols)
   for (let r = 0; r < size; r++) {
     let cnt = 1
     for (let c = 1; c < size; c++) {
@@ -462,7 +462,7 @@ const calcPenalty = (mod: boolean[][], size: number): number => {
     if (cnt >= 5) pen += cnt - 2
   }
 
-  // Rule 2 — 2×2 same-colour blocks
+  // Rule 2: 2x2 same-color blocks
   for (let r = 0; r < size - 1; r++) {
     for (let c = 0; c < size - 1; c++) {
       const v = mod[r][c]
@@ -471,7 +471,7 @@ const calcPenalty = (mod: boolean[][], size: number): number => {
     }
   }
 
-  // Rule 3 — finder-like patterns (10111010000 or 00001011101)
+  // Rule 3: finder-like patterns (10111010000 or 00001011101)
   const p1 = [
     true,
     false,
@@ -526,7 +526,7 @@ const calcPenalty = (mod: boolean[][], size: number): number => {
     }
   }
 
-  // Rule 4 — dark-module proportion
+  // Rule 4: dark-module proportion
   let dark = 0
   for (let r = 0; r < size; r++)
     for (let c = 0; c < size; c++) if (mod[r][c]) dark++
