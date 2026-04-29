@@ -4,6 +4,7 @@ export const APP_URLS = {
   SCHEMA_MARKUP_GENERATOR: 'https://schema-markup-generator.upshift.be',
   EMAIL_SIGNATURE: 'https://email-signature.upshift.be',
   IMAGE_OPTIMIZER: 'https://image-optimizer.upshift.be',
+  MOCKUP_GENERATOR: 'https://mockup-generator.upshift.be',
 } as const;
 
 export type AppUrlKey = keyof typeof APP_URLS;

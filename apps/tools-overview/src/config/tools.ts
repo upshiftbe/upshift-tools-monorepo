@@ -5,7 +5,7 @@ export interface Tool {
   name: string;
   description: string;
   icon: string;
-  /** Port for dev mode (overview on 3000, tools on 3001–3003) */
+  /** Port for dev mode (overview on 3000, tools on 3001+) */
   devPort: number;
   /** Production URL for this tool */
   prodUrl: string;
@@ -58,6 +58,17 @@ export const TOOLS: Tool[] = [
     prodUrl: APP_URLS.IMAGE_OPTIMIZER,
     color: 'teal',
     pastel: 'amber',
+  },
+  {
+    id: 'mockup-generator',
+    name: 'Mockup Generator',
+    description:
+      'Turn screenshots into polished social mockups. Upload up to three images, frame them in devices, then copy or download a PNG.',
+    icon: 'MonitorSmartphone',
+    devPort: 3005,
+    prodUrl: APP_URLS.MOCKUP_GENERATOR,
+    color: 'teal',
+    pastel: 'violet',
   },
 ];
 

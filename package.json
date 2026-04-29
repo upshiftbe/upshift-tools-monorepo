@@ -11,6 +11,7 @@
     "dev:email-signature": "nx dev email-signature",
     "dev:schema-markup-generator": "nx dev schema-markup-generator",
     "dev:image-optimizer": "nx dev image-optimizer",
+    "dev:mockup-generator": "nx dev mockup-generator",
     "format": "nx format:write .",
     "lint": "nx lint"
   },

@@ -1,9 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { AppShell, Card, CardContent, CardHeader } from '@upshift-tools/shared-ui';
-import { Code2, ExternalLink, ImageDown, Mail, QrCode } from 'lucide-react';
+import { Code2, ExternalLink, ImageDown, Mail, MonitorSmartphone, QrCode } from 'lucide-react';
 import { TOOLS, getToolHref, type Tool } from '~/config/tools';
 
-const ICONS = { QrCode, Mail, Code2, ImageDown } as const;
+const ICONS = { QrCode, Mail, Code2, ImageDown, MonitorSmartphone } as const;
 
 export const Route = createFileRoute('/')({ component: OverviewPage });
 

@@ -1,0 +1,15 @@
+# Netlify config for mockup-generator
+# Package directory: apps/mockup-generator (set in Netlify UI)
+# Base directory: repository root (default)
+
+[build]
+  command = "pnpm nx build mockup-generator"
+  publish = "apps/mockup-generator/dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
