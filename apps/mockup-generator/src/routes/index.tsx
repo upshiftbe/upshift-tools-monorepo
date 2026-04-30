@@ -4,7 +4,9 @@ import {
   CheckCircle2,
   Copy,
   Download,
+  Globe2,
   ImagePlus,
+  Link,
   LayoutTemplate,
   Loader2,
   MonitorSmartphone,
@@ -36,6 +38,7 @@ interface UploadedScreenshot extends MockupImage {
   id: string;
   file: File;
   objectUrl: string;
+  sourceUrl?: string;
 }
 
 type MockupPresetId = 'upshift-warm' | 'aqua-showcase' | 'editorial-brown' | 'minimal-paper' | 'custom';
@@ -142,6 +145,9 @@ function App() {
   const [isDragging, setIsDragging] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [copyStatus, setCopyStatus] = useState<'idle' | 'copied' | 'error'>('idle');
+  const [captureUrl, setCaptureUrl] = useState('');
+  const [captureStatus, setCaptureStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [captureMessage, setCaptureMessage] = useState('');
 
   const visibleCount = Math.min(settings.count, Math.max(1, screenshots.length || settings.count)) as 1 | 2 | 3;
   const preset = OUTPUT_PRESETS[settings.preset];
@@ -185,6 +191,35 @@ function App() {
     });
     setSettings((prev) => ({ ...prev, count: Math.min(loaded.length, 3) as 1 | 2 | 3 }));
   }, []);
+
+  const addScreenshotFromUrl = useCallback(async () => {
+    const normalizedUrl = normalizeCaptureUrl(captureUrl);
+    if (!normalizedUrl) {
+      setCaptureStatus('error');
+      setCaptureMessage('Enter a valid website URL.');
+      return;
+    }
+
+    setCaptureStatus('loading');
+    setCaptureMessage('Taking screenshot...');
+
+    try {
+      const captured = await captureWebsiteScreenshot(normalizedUrl);
+      setScreenshots((prev) => {
+        const next = [...prev, captured].slice(-3);
+        const removed = prev.filter((item) => !next.some((nextItem) => nextItem.id === item.id));
+        removed.forEach((item) => URL.revokeObjectURL(item.objectUrl));
+        setSettings((current) => ({ ...current, count: Math.min(next.length, 3) as 1 | 2 | 3 }));
+        return next;
+      });
+      setCaptureStatus('success');
+      setCaptureMessage('Website screenshot added.');
+      window.setTimeout(() => setCaptureStatus('idle'), 1800);
+    } catch (error) {
+      setCaptureStatus('error');
+      setCaptureMessage(error instanceof Error ? error.message : 'Could not capture this URL.');
+    }
+  }, [captureUrl]);
 
   const handleDrop = useCallback(
     (event: React.DragEvent) => {
@@ -272,7 +307,7 @@ function App() {
         <header className='mb-7 flex flex-col gap-3 border-b border-border pb-6 lg:flex-row lg:items-end lg:justify-between'>
           <div className='max-w-3xl'>
             <p className='flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground'>
-              <Sparkles className='h-3.5 w-3.5 text-[var(--brand-accent-strong)]' aria-hidden />
+              <Sparkles className='h-3.5 w-3.5 text-(--brand-accent-strong)' aria-hidden />
               Mockup Generator
             </p>
             <h1 className='font-display mt-2 max-w-2xl text-3xl font-semibold leading-[1.08] tracking-tight text-foreground sm:text-4xl'>
@@ -282,20 +317,62 @@ function App() {
               Compose up to 3 screenshots with warm brand presets, device frames, and canvas-native PNG export.
             </p>
           </div>
-          <div className='rounded-[var(--radius)] border border-border bg-card px-3 py-2 text-sm text-muted-foreground'>
+          <div className='rounded-(--radius) border border-border bg-card px-3 py-2 text-sm text-muted-foreground'>
             <span className='font-semibold text-foreground'>{preset.label}</span> · {preset.width}x{preset.height}
           </div>
         </header>
 
-        <div className='grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px] xl:items-start'>
-          <main className='space-y-5'>
+        <div className='grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px] xl:items-start'>
+          <main className='space-y-4 xl:sticky xl:top-20'>
+            <div className='mockup-preview-enter overflow-hidden rounded-[var(--radius-xl)] border border-border bg-card p-3 shadow-[var(--shadow-card)]'>
+              <canvas ref={canvasRef} className='block h-auto w-full rounded-[calc(var(--radius-xl)-8px)]' />
+            </div>
+
+            <Card className='bg-card/95 backdrop-blur'>
+              <CardContent className='flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between'>
+                <div className='min-w-0'>
+                  <p className='font-display text-base font-semibold text-foreground'>Export</p>
+                  <p className='text-sm text-muted-foreground'>
+                    {selectedImages.length > 0
+                      ? `${selectedImages.length} screenshot${selectedImages.length === 1 ? '' : 's'} · ${activePresetLabel}`
+                      : 'Preview renders locally from the same export canvas.'}
+                  </p>
+                </div>
+                <div className='flex flex-wrap gap-2'>
+                  <Button type='button' variant='outline' onClick={copyPng} className='gap-2' disabled={isExporting}>
+                    {isExporting ? <Loader2 className='h-4 w-4 animate-spin' /> : <Copy className='h-4 w-4' />}
+                    {copyStatus === 'copied' ? 'Copied' : 'Copy PNG'}
+                  </Button>
+                  <Button type='button' onClick={downloadPng} className='gap-2' disabled={isExporting}>
+                    <Download className='h-4 w-4' />
+                    Download PNG
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {copyStatus === 'error' && (
+              <div className='flex items-center gap-2 rounded-[var(--radius)] border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive'>
+                <Trash2 className='h-4 w-4' />
+                Copy is not available in this browser context. Download still works.
+              </div>
+            )}
+            {copyStatus === 'copied' && (
+              <div className='flex items-center gap-2 rounded-[var(--radius)] border border-[var(--success)]/25 bg-[var(--success-soft)] px-3 py-2 text-sm text-[var(--success)]'>
+                <CheckCircle2 className='h-4 w-4' />
+                PNG copied to clipboard.
+              </div>
+            )}
+          </main>
+
+          <aside className='space-y-5'>
             <div
               className={[
-                'rounded-[var(--radius-xl)] border border-dashed transition-colors duration-200',
+                'rounded-xl border border-dashed transition-colors duration-200',
                 'flex min-h-[164px] cursor-pointer flex-col items-center justify-center gap-3 p-6 text-center',
                 isDragging
-                  ? 'border-[var(--brand-accent-strong)] bg-accent shadow-[var(--shadow-md)]'
-                  : 'border-input bg-card hover:border-[var(--brand-accent-strong)]/50 hover:bg-accent/60',
+                  ? 'border-(--brand-accent-strong) bg-accent shadow-(--shadow-md)'
+                  : 'border-input bg-card hover:border-(--brand-accent-strong)/50 hover:bg-accent/60',
               ].join(' ')}
               onDragOver={(event) => {
                 event.preventDefault();
@@ -331,6 +408,79 @@ function App() {
               />
             </div>
 
+            <section className='rounded-[var(--radius-xl)] border border-border bg-card p-4'>
+              <div className='flex flex-col gap-4 lg:flex-row items-center'>
+                <div className='min-w-0 flex-1 space-y-2'>
+                  <Label
+                    htmlFor='website-screenshot-url'
+                    className='flex items-center gap-2 text-sm font-semibold text-foreground'
+                  >
+                    <Globe2 className='h-4 w-4 text-[var(--brand-accent-strong)]' />
+                    Capture from URL (This uses the microlink API which is limited to 50 requests per day.)
+                  </Label>
+                  <div className='flex min-h-11 items-center gap-2 rounded-[var(--radius)] border border-input bg-background px-3 transition focus-within:ring-2 focus-within:ring-ring'>
+                    <Link className='h-4 w-4 shrink-0 text-muted-foreground' aria-hidden />
+                    <input
+                      id='website-screenshot-url'
+                      type='url'
+                      value={captureUrl}
+                      onChange={(event) => {
+                        setCaptureUrl(event.target.value);
+                        if (captureStatus !== 'loading') {
+                          setCaptureStatus('idle');
+                          setCaptureMessage('');
+                        }
+                      }}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter') {
+                          event.preventDefault();
+                          addScreenshotFromUrl();
+                        }
+                      }}
+                      placeholder='https://upshift.be'
+                      className='min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground'
+                    />
+                  </div>
+                  <p className='text-xs leading-5 text-muted-foreground'>
+                    Captures are generated in-browser via a screenshot service, then added to the local canvas.
+                  </p>
+                </div>
+                <Button
+                  type='button'
+                  onClick={addScreenshotFromUrl}
+                  disabled={captureStatus === 'loading'}
+                  className='gap-2 lg:min-w-36'
+                >
+                  {captureStatus === 'loading' ? (
+                    <Loader2 className='h-4 w-4 animate-spin' />
+                  ) : (
+                    <Globe2 className='h-4 w-4' />
+                  )}
+                  {captureStatus === 'loading' ? 'Capturing' : 'Capture URL'}
+                </Button>
+              </div>
+              {captureMessage && (
+                <p
+                  className={[
+                    'mt-3 flex items-center gap-2 rounded-[var(--radius)] px-3 py-2 text-sm',
+                    captureStatus === 'error'
+                      ? 'border border-destructive/30 bg-destructive/10 text-destructive'
+                      : 'border border-[var(--success)]/25 bg-[var(--success-soft)] text-[var(--success)]',
+                  ].join(' ')}
+                  role={captureStatus === 'error' ? 'alert' : 'status'}
+                >
+                  {captureStatus === 'loading' ? (
+                    <Loader2 className='h-4 w-4 animate-spin' />
+                  ) : captureStatus === 'error' ? (
+                    <X className='h-4 w-4' />
+                  ) : (
+                    <CheckCircle2 className='h-4 w-4' />
+                  )}
+                  {captureMessage}
+                </p>
+              )}
+            </section>
+
             {screenshots.length > 0 && (
               <section aria-label='Uploaded screenshots' className='space-y-2'>
                 <div className='flex items-center justify-between gap-3'>
@@ -351,7 +501,9 @@ function App() {
                         className='h-12 w-16 shrink-0 rounded-[calc(var(--radius)-4px)] object-cover'
                       />
                       <div className='min-w-0 flex-1'>
-                        <p className='truncate font-medium text-foreground'>{screenshot.file.name}</p>
+                        <p className='truncate font-medium text-foreground'>
+                          {screenshot.sourceUrl ?? screenshot.file.name}
+                        </p>
                         <p className='text-xs text-muted-foreground'>
                           Shot {index + 1} · {screenshot.width}x{screenshot.height}
                         </p>
@@ -372,58 +524,15 @@ function App() {
               </section>
             )}
 
-            <div className='space-y-4 lg:sticky lg:top-20'>
-              <div className='mockup-preview-enter overflow-hidden rounded-[var(--radius-xl)] border border-border bg-card p-3 shadow-[var(--shadow-card)]'>
-                <canvas ref={canvasRef} className='block h-auto w-full rounded-[calc(var(--radius-xl)-8px)]' />
-              </div>
-
-              <Card className='bg-card/95 backdrop-blur'>
-                <CardContent className='flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between'>
-                  <div className='min-w-0'>
-                    <p className='font-display text-base font-semibold text-foreground'>Export</p>
-                    <p className='text-sm text-muted-foreground'>
-                      {selectedImages.length > 0
-                        ? `${selectedImages.length} screenshot${selectedImages.length === 1 ? '' : 's'} · ${activePresetLabel}`
-                        : 'Preview renders locally from the same export canvas.'}
-                    </p>
-                  </div>
-                  <div className='flex flex-wrap gap-2'>
-                    <Button type='button' variant='outline' onClick={copyPng} className='gap-2' disabled={isExporting}>
-                      {isExporting ? <Loader2 className='h-4 w-4 animate-spin' /> : <Copy className='h-4 w-4' />}
-                      {copyStatus === 'copied' ? 'Copied' : 'Copy PNG'}
-                    </Button>
-                    <Button type='button' onClick={downloadPng} className='gap-2' disabled={isExporting}>
-                      <Download className='h-4 w-4' />
-                      Download PNG
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {copyStatus === 'error' && (
-                <div className='flex items-center gap-2 rounded-[var(--radius)] border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive'>
-                  <Trash2 className='h-4 w-4' />
-                  Copy is not available in this browser context. Download still works.
-                </div>
-              )}
-              {copyStatus === 'copied' && (
-                <div className='flex items-center gap-2 rounded-[var(--radius)] border border-[var(--success)]/25 bg-[var(--success-soft)] px-3 py-2 text-sm text-[var(--success)]'>
-                  <CheckCircle2 className='h-4 w-4' />
-                  PNG copied to clipboard.
-                </div>
-              )}
-            </div>
-          </main>
-
-          <aside className='space-y-4 xl:sticky xl:top-20'>
-            <ControlCard icon={<LayoutTemplate className='h-4 w-4' />} title='Canvas'>
-              <SegmentedControl
-                label='Size'
-                value={settings.preset}
-                options={Object.entries(OUTPUT_PRESETS).map(([value, output]) => ({ label: output.label, value }))}
-                onChange={(value) => setCustomSetting('preset', value as OutputPreset)}
-              />
-            </ControlCard>
+            <div className='space-y-4'>
+              <ControlCard icon={<LayoutTemplate className='h-4 w-4' />} title='Canvas'>
+                <SegmentedControl
+                  label='Size'
+                  value={settings.preset}
+                  options={Object.entries(OUTPUT_PRESETS).map(([value, output]) => ({ label: output.label, value }))}
+                  onChange={(value) => setCustomSetting('preset', value as OutputPreset)}
+                />
+              </ControlCard>
 
             <ControlCard icon={<ImagePlus className='h-4 w-4' />} title='Screenshots'>
               <SegmentedControl
@@ -451,7 +560,11 @@ function App() {
             <ControlCard
               icon={<Palette className='h-4 w-4' />}
               title='Background'
-              action={<span className='rounded-full bg-accent px-2 py-1 text-xs font-semibold text-[var(--brand-accent-strong)]'>{activePresetLabel}</span>}
+              action={
+                <span className='rounded-full bg-accent px-2 py-1 text-xs font-semibold text-[var(--brand-accent-strong)]'>
+                  {activePresetLabel}
+                </span>
+              }
             >
               <PresetGrid activePreset={activePreset} onSelect={applyMockupPreset} />
               <Divider />
@@ -519,6 +632,7 @@ function App() {
                 Reset all
               </Button>
             </ControlCard>
+            </div>
           </aside>
         </div>
       </section>
@@ -573,7 +687,10 @@ function PresetGrid({
               : 'border-border bg-transparent hover:bg-muted/60',
           ].join(' ')}
         >
-          <span className='h-11 w-11 rounded-[calc(var(--radius)-2px)] border border-border' style={{ background: preset.swatch }} />
+          <span
+            className='h-11 w-11 rounded-[calc(var(--radius)-2px)] border border-border'
+            style={{ background: preset.swatch }}
+          />
           <span className='min-w-0'>
             <span className='block font-semibold text-foreground'>{preset.name}</span>
             <span className='block truncate text-xs text-muted-foreground'>{preset.description}</span>
@@ -601,7 +718,11 @@ function BackgroundControls({
     return (
       <fieldset className='space-y-3'>
         <legend className='sr-only'>Solid background controls</legend>
-        <ColorControl label='Solid color' value={settings.solidColor} onChange={(value) => setCustomSetting('solidColor', value)} />
+        <ColorControl
+          label='Solid color'
+          value={settings.solidColor}
+          onChange={(value) => setCustomSetting('solidColor', value)}
+        />
         <BackgroundPresetRow
           presets={['#fffcf7', '#f8f5ef', '#f3ede3', '#16110f', '#e8f5f8']}
           onSelect={(value) => setCustomSetting('solidColor', value)}
@@ -620,7 +741,11 @@ function BackgroundControls({
             value={settings.gradientStart}
             onChange={(value) => setCustomSetting('gradientStart', value)}
           />
-          <ColorControl label='End' value={settings.gradientEnd} onChange={(value) => setCustomSetting('gradientEnd', value)} />
+          <ColorControl
+            label='End'
+            value={settings.gradientEnd}
+            onChange={(value) => setCustomSetting('gradientEnd', value)}
+          />
         </div>
         <RangeControl
           label='Angle'
@@ -657,7 +782,11 @@ function BackgroundControls({
     <fieldset className='space-y-4'>
       <legend className='sr-only'>Pattern background controls</legend>
       <div className='grid grid-cols-2 gap-3'>
-        <ColorControl label='Base' value={settings.patternBase} onChange={(value) => setCustomSetting('patternBase', value)} />
+        <ColorControl
+          label='Base'
+          value={settings.patternBase}
+          onChange={(value) => setCustomSetting('patternBase', value)}
+        />
         <ColorControl
           label='Pattern'
           value={settings.patternColor}
@@ -814,4 +943,53 @@ async function loadScreenshot(file: File): Promise<UploadedScreenshot> {
     width: image.naturalWidth,
     height: image.naturalHeight,
   };
+}
+
+function normalizeCaptureUrl(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  const withProtocol = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+
+  try {
+    const url = new URL(withProtocol);
+    if (!['http:', 'https:'].includes(url.protocol)) return null;
+    return url.toString();
+  } catch {
+    return null;
+  }
+}
+
+async function captureWebsiteScreenshot(url: string): Promise<UploadedScreenshot> {
+  const screenshotUrl = buildScreenshotServiceUrl(url);
+  const response = await fetch(screenshotUrl, { cache: 'no-store' });
+
+  if (!response.ok) {
+    throw new Error('The screenshot service could not load this page.');
+  }
+
+  const blob = await response.blob();
+  if (!blob.type.startsWith('image/')) {
+    throw new Error('The screenshot service did not return an image.');
+  }
+
+  const hostname = new URL(url).hostname.replace(/^www\./, '');
+  const extension = blob.type.includes('jpeg') ? 'jpg' : blob.type.includes('webp') ? 'webp' : 'png';
+  const file = new File([blob], `${hostname}-screenshot.${extension}`, { type: blob.type });
+  const screenshot = await loadScreenshot(file);
+  return { ...screenshot, sourceUrl: url };
+}
+
+function buildScreenshotServiceUrl(url: string) {
+  const params = new URLSearchParams({
+    url,
+    screenshot: 'true',
+    meta: 'false',
+    'viewport.width': '1440',
+    'viewport.height': '1800',
+    waitUntil: 'networkidle2',
+    delay: '1200',
+    embed: 'screenshot.url',
+  });
+
+  return `https://api.microlink.io/?${params.toString()}`;
 }
