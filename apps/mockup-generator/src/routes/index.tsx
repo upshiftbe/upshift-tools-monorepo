@@ -5,50 +5,92 @@ import {
   Copy,
   Download,
   Globe2,
-  ImagePlus,
+  Layers,
   Link,
   LayoutTemplate,
   Loader2,
+  Maximize2,
   MonitorSmartphone,
   Palette,
   RotateCcw,
+  SendToBack,
   SlidersHorizontal,
   Sparkles,
   Trash2,
   Upload,
   X,
 } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type PointerEvent as ReactPointerEvent,
+  type ReactNode,
+} from 'react';
 import {
   OUTPUT_PRESETS,
+  createDefaultPlacements,
   renderMockup,
   type BackgroundStyle,
   type DeviceStyle,
   type LayoutStyle,
-  type MockupImage,
+  type MockupPlacement,
   type MockupSettings,
   type OutputPreset,
+  type PlacedMockupImage,
 } from '~/lib/mockupRenderer';
 
 export const Route = createFileRoute('/')({ component: App });
 
 const ACCEPTED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+const MIN_PLACEMENT_SIZE = 0.08;
+const MAX_PLACEMENT_SIZE = 1.45;
 
-interface UploadedScreenshot extends MockupImage {
-  id: string;
+interface UploadedScreenshot extends PlacedMockupImage {
   file: File;
   objectUrl: string;
   sourceUrl?: string;
 }
 
+interface Point {
+  x: number;
+  y: number;
+}
+
+type CanvasAction = 'move' | 'resize' | 'rotate';
+
+interface CanvasHit {
+  id: string;
+  action: CanvasAction;
+}
+
+interface DragSession {
+  pointerId: number;
+  id: string;
+  action: CanvasAction;
+  startPoint: Point;
+  startPlacement: MockupPlacement;
+  aspect: number;
+  startAngle: number;
+}
+
 type MockupPresetId = 'upshift-warm' | 'aqua-showcase' | 'editorial-brown' | 'minimal-paper' | 'custom';
+
+const DEFAULT_PLACEMENT: MockupPlacement = {
+  centerX: 0.5,
+  centerY: 0.5,
+  width: 0.42,
+  height: 0.72,
+  rotation: 0,
+  zIndex: 0,
+};
 
 const DEFAULT_SETTINGS: MockupSettings = {
   preset: 'widescreen',
   background: 'pattern',
-  device: 'phone',
   layout: 'overlap',
-  count: 3,
   padding: 126,
   radius: 28,
   shadow: 44,
@@ -139,7 +181,9 @@ function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const screenshotsRef = useRef<UploadedScreenshot[]>([]);
+  const dragSessionRef = useRef<DragSession | null>(null);
   const [screenshots, setScreenshots] = useState<UploadedScreenshot[]>([]);
+  const [selectedScreenshotId, setSelectedScreenshotId] = useState<string | null>(null);
   const [settings, setSettings] = useState<MockupSettings>(DEFAULT_SETTINGS);
   const [activePreset, setActivePreset] = useState<MockupPresetId>('upshift-warm');
   const [isDragging, setIsDragging] = useState(false);
@@ -149,18 +193,53 @@ function App() {
   const [captureStatus, setCaptureStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [captureMessage, setCaptureMessage] = useState('');
 
-  const visibleCount = Math.min(settings.count, Math.max(1, screenshots.length || settings.count)) as 1 | 2 | 3;
   const preset = OUTPUT_PRESETS[settings.preset];
   const activePresetLabel = MOCKUP_PRESETS.find((item) => item.id === activePreset)?.name ?? 'Custom';
+  const selectedScreenshot = screenshots.find((screenshot) => screenshot.id === selectedScreenshotId) ?? null;
+  const selectedIndex = selectedScreenshot
+    ? screenshots.findIndex((screenshot) => screenshot.id === selectedScreenshot.id) + 1
+    : null;
+
+  const selectedLayerState = useMemo(() => {
+    if (!selectedScreenshot) return { canSendBack: false, canBringForward: false };
+    const ordered = [...screenshots].sort((a, b) => a.placement.zIndex - b.placement.zIndex);
+    const layerIndex = ordered.findIndex((item) => item.id === selectedScreenshot.id);
+    return {
+      canSendBack: layerIndex > 0,
+      canBringForward: layerIndex >= 0 && layerIndex < ordered.length - 1,
+    };
+  }, [screenshots, selectedScreenshot]);
+
+  const renderCanvas = useCallback(
+    (showControls: boolean) => {
+      if (!canvasRef.current) return;
+      renderMockup(canvasRef.current, screenshots, settings, {
+        selectedId: selectedScreenshotId,
+        showControls,
+      });
+    },
+    [screenshots, selectedScreenshotId, settings],
+  );
 
   useEffect(() => {
-    if (!canvasRef.current) return;
-    renderMockup(canvasRef.current, screenshots, { ...settings, count: visibleCount });
-  }, [screenshots, settings, visibleCount]);
+    renderCanvas(true);
+  }, [renderCanvas]);
 
   useEffect(() => {
     screenshotsRef.current = screenshots;
   }, [screenshots]);
+
+  useEffect(() => {
+    if (!screenshots.length) {
+      if (selectedScreenshotId) setSelectedScreenshotId(null);
+      return;
+    }
+
+    if (!selectedScreenshotId || !screenshots.some((screenshot) => screenshot.id === selectedScreenshotId)) {
+      const topItem = [...screenshots].sort((a, b) => b.placement.zIndex - a.placement.zIndex)[0];
+      setSelectedScreenshotId(topItem.id);
+    }
+  }, [screenshots, selectedScreenshotId]);
 
   useEffect(() => {
     return () => {
@@ -180,17 +259,25 @@ function App() {
     setActivePreset(presetId);
   }, []);
 
-  const processFiles = useCallback(async (incoming: File[]) => {
-    const valid = incoming.filter((file) => ACCEPTED_MIME_TYPES.includes(file.type)).slice(0, 3);
-    if (!valid.length) return;
+  const arrangeScreenshots = useCallback(() => {
+    setScreenshots((prev) => createDefaultPlacements(prev, settings, 'phone'));
+  }, [settings]);
 
-    const loaded = await Promise.all(valid.map(loadScreenshot));
-    setScreenshots((prev) => {
-      prev.forEach((item) => URL.revokeObjectURL(item.objectUrl));
-      return loaded;
-    });
-    setSettings((prev) => ({ ...prev, count: Math.min(loaded.length, 3) as 1 | 2 | 3 }));
-  }, []);
+  const processFiles = useCallback(
+    async (incoming: File[]) => {
+      const valid = incoming.filter((file) => ACCEPTED_MIME_TYPES.includes(file.type)).slice(0, 3);
+      if (!valid.length) return;
+
+      const loaded = await Promise.all(valid.map(loadScreenshot));
+      const arranged = createDefaultPlacements(loaded, settings, 'phone');
+      setScreenshots((prev) => {
+        prev.forEach((item) => URL.revokeObjectURL(item.objectUrl));
+        return arranged;
+      });
+      setSelectedScreenshotId(arranged.at(-1)?.id ?? null);
+    },
+    [settings],
+  );
 
   const addScreenshotFromUrl = useCallback(async () => {
     const normalizedUrl = normalizeCaptureUrl(captureUrl);
@@ -209,9 +296,9 @@ function App() {
         const next = [...prev, captured].slice(-3);
         const removed = prev.filter((item) => !next.some((nextItem) => nextItem.id === item.id));
         removed.forEach((item) => URL.revokeObjectURL(item.objectUrl));
-        setSettings((current) => ({ ...current, count: Math.min(next.length, 3) as 1 | 2 | 3 }));
-        return next;
+        return createDefaultPlacements(next, settings, 'phone');
       });
+      setSelectedScreenshotId(captured.id);
       setCaptureStatus('success');
       setCaptureMessage('Website screenshot added.');
       window.setTimeout(() => setCaptureStatus('idle'), 1800);
@@ -219,7 +306,7 @@ function App() {
       setCaptureStatus('error');
       setCaptureMessage(error instanceof Error ? error.message : 'Could not capture this URL.');
     }
-  }, [captureUrl]);
+  }, [captureUrl, settings]);
 
   const handleDrop = useCallback(
     (event: React.DragEvent) => {
@@ -242,20 +329,35 @@ function App() {
     setScreenshots((prev) => {
       const target = prev.find((item) => item.id === id);
       if (target) URL.revokeObjectURL(target.objectUrl);
-      const next = prev.filter((item) => item.id !== id);
-      setSettings((current) => ({
-        ...current,
-        count: Math.max(1, Math.min(current.count, next.length || 1)) as 1 | 2 | 3,
-      }));
+      const next = normalizeZIndex(prev.filter((item) => item.id !== id));
+      setSelectedScreenshotId((current) => (current === id ? (next.at(-1)?.id ?? null) : current));
       return next;
     });
   }, []);
+
+  const updateScreenshot = useCallback((id: string, update: Partial<Pick<UploadedScreenshot, 'device'>>) => {
+    setScreenshots((prev) => prev.map((item) => (item.id === id ? { ...item, ...update } : item)));
+  }, []);
+
+  const updatePlacement = useCallback((id: string, update: Partial<MockupPlacement>) => {
+    setScreenshots((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, placement: { ...item.placement, ...update } } : item,
+      ),
+    );
+  }, []);
+
+  const moveSelectedLayer = useCallback((direction: -1 | 1) => {
+    if (!selectedScreenshotId) return;
+    setScreenshots((prev) => swapLayer(prev, selectedScreenshotId, direction));
+  }, [selectedScreenshotId]);
 
   const resetAll = useCallback(() => {
     setScreenshots((prev) => {
       prev.forEach((item) => URL.revokeObjectURL(item.objectUrl));
       return [];
     });
+    setSelectedScreenshotId(null);
     setSettings(DEFAULT_SETTINGS);
     setActivePreset('upshift-warm');
     setCopyStatus('idle');
@@ -264,8 +366,11 @@ function App() {
   const exportBlob = useCallback(async () => {
     const canvas = canvasRef.current;
     if (!canvas) return null;
-    return new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png', 1));
-  }, []);
+    renderMockup(canvas, screenshots, settings);
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png', 1));
+    renderCanvas(true);
+    return blob;
+  }, [renderCanvas, screenshots, settings]);
 
   const downloadPng = useCallback(async () => {
     setIsExporting(true);
@@ -299,7 +404,99 @@ function App() {
     }
   }, [exportBlob]);
 
-  const selectedImages = useMemo(() => screenshots.slice(0, visibleCount), [screenshots, visibleCount]);
+  const canvasPointFromEvent = useCallback((event: ReactPointerEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return null;
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: ((event.clientX - rect.left) / rect.width) * canvas.width,
+      y: ((event.clientY - rect.top) / rect.height) * canvas.height,
+    };
+  }, []);
+
+  const handleCanvasPointerDown = useCallback(
+    (event: ReactPointerEvent<HTMLCanvasElement>) => {
+      const point = canvasPointFromEvent(event);
+      if (!point) return;
+
+      const hit = hitTestCanvas(point, screenshots, settings.preset, selectedScreenshotId);
+      if (!hit) {
+        setSelectedScreenshotId(null);
+        return;
+      }
+
+      const target = screenshots.find((screenshot) => screenshot.id === hit.id);
+      if (!target) return;
+
+      const presetSize = OUTPUT_PRESETS[settings.preset];
+      const center = placementCenter(target.placement, presetSize.width, presetSize.height);
+      dragSessionRef.current = {
+        pointerId: event.pointerId,
+        id: target.id,
+        action: hit.action,
+        startPoint: point,
+        startPlacement: { ...target.placement },
+        aspect: target.placement.width / target.placement.height,
+        startAngle: Math.atan2(point.y - center.y, point.x - center.x),
+      };
+      setSelectedScreenshotId(target.id);
+      event.currentTarget.setPointerCapture(event.pointerId);
+      event.preventDefault();
+    },
+    [canvasPointFromEvent, screenshots, selectedScreenshotId, settings.preset],
+  );
+
+  const handleCanvasPointerMove = useCallback(
+    (event: ReactPointerEvent<HTMLCanvasElement>) => {
+      const session = dragSessionRef.current;
+      if (!session || session.pointerId !== event.pointerId) return;
+      const point = canvasPointFromEvent(event);
+      if (!point) return;
+
+      const presetSize = OUTPUT_PRESETS[settings.preset];
+
+      if (session.action === 'move') {
+        const deltaX = (point.x - session.startPoint.x) / presetSize.width;
+        const deltaY = (point.y - session.startPoint.y) / presetSize.height;
+        updatePlacement(session.id, {
+          centerX: clamp(session.startPlacement.centerX + deltaX, -0.25, 1.25),
+          centerY: clamp(session.startPlacement.centerY + deltaY, -0.25, 1.25),
+        });
+      }
+
+      if (session.action === 'resize') {
+        const center = placementCenter(session.startPlacement, presetSize.width, presetSize.height);
+        const local = inverseRotatePoint(point, center, (session.startPlacement.rotation * Math.PI) / 180);
+        const halfWidth = Math.max(
+          Math.abs(local.x - center.x),
+          Math.abs(local.y - center.y) * session.aspect,
+          (presetSize.width * MIN_PLACEMENT_SIZE) / 2,
+        );
+        const nextWidth = clamp((halfWidth * 2) / presetSize.width, MIN_PLACEMENT_SIZE, MAX_PLACEMENT_SIZE);
+        const nextHeight = clamp(nextWidth / session.aspect, MIN_PLACEMENT_SIZE, MAX_PLACEMENT_SIZE);
+        updatePlacement(session.id, { width: nextWidth, height: nextHeight });
+      }
+
+      if (session.action === 'rotate') {
+        const center = placementCenter(session.startPlacement, presetSize.width, presetSize.height);
+        const angle = Math.atan2(point.y - center.y, point.x - center.x);
+        const rotation = session.startPlacement.rotation + ((angle - session.startAngle) * 180) / Math.PI;
+        updatePlacement(session.id, { rotation: Math.round(rotation) });
+      }
+
+      event.preventDefault();
+    },
+    [canvasPointFromEvent, settings.preset, updatePlacement],
+  );
+
+  const finishCanvasInteraction = useCallback((event: ReactPointerEvent<HTMLCanvasElement>) => {
+    const session = dragSessionRef.current;
+    if (!session || session.pointerId !== event.pointerId) return;
+    dragSessionRef.current = null;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  }, []);
 
   return (
     <div className='min-h-screen text-foreground'>
@@ -325,7 +522,15 @@ function App() {
         <div className='grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px] xl:items-start'>
           <main className='space-y-4 xl:sticky xl:top-20'>
             <div className='mockup-preview-enter overflow-hidden rounded-[var(--radius-xl)] border border-border bg-card p-3 shadow-[var(--shadow-card)]'>
-              <canvas ref={canvasRef} className='block h-auto w-full rounded-[calc(var(--radius-xl)-8px)]' />
+              <canvas
+                ref={canvasRef}
+                className='block h-auto w-full touch-none rounded-[calc(var(--radius-xl)-8px)] cursor-grab active:cursor-grabbing'
+                onPointerDown={handleCanvasPointerDown}
+                onPointerMove={handleCanvasPointerMove}
+                onPointerUp={finishCanvasInteraction}
+                onPointerCancel={finishCanvasInteraction}
+                aria-label='Editable mockup canvas'
+              />
             </div>
 
             <Card className='bg-card/95 backdrop-blur'>
@@ -333,8 +538,8 @@ function App() {
                 <div className='min-w-0'>
                   <p className='font-display text-base font-semibold text-foreground'>Export</p>
                   <p className='text-sm text-muted-foreground'>
-                    {selectedImages.length > 0
-                      ? `${selectedImages.length} screenshot${selectedImages.length === 1 ? '' : 's'} · ${activePresetLabel}`
+                    {screenshots.length > 0
+                      ? `${screenshots.length} screenshot${screenshots.length === 1 ? '' : 's'} · ${activePresetLabel}`
                       : 'Preview renders locally from the same export canvas.'}
                   </p>
                 </div>
@@ -409,7 +614,7 @@ function App() {
             </div>
 
             <section className='rounded-[var(--radius-xl)] border border-border bg-card p-4'>
-              <div className='flex flex-col gap-4 lg:flex-row items-center'>
+              <div className='flex flex-col items-center gap-4 lg:flex-row'>
                 <div className='min-w-0 flex-1 space-y-2'>
                   <Label
                     htmlFor='website-screenshot-url'
@@ -487,11 +692,22 @@ function App() {
                   <p className='text-sm font-semibold text-foreground'>Screenshots</p>
                   <p className='text-xs text-muted-foreground'>{screenshots.length}/3 loaded</p>
                 </div>
-                <div className='grid gap-2 sm:grid-cols-3'>
+                <div className='grid gap-2'>
                   {screenshots.map((screenshot, index) => (
                     <div
                       key={screenshot.id}
-                      className='flex items-center gap-3 rounded-[var(--radius)] border border-border bg-card p-2 text-sm'
+                      className={[
+                        'flex cursor-pointer items-center gap-3 rounded-[var(--radius)] border bg-card p-2 text-sm transition',
+                        selectedScreenshotId === screenshot.id
+                          ? 'border-[var(--brand-accent-strong)] bg-accent/70'
+                          : 'border-border hover:bg-muted/60',
+                      ].join(' ')}
+                      role='button'
+                      tabIndex={0}
+                      onClick={() => setSelectedScreenshotId(screenshot.id)}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') setSelectedScreenshotId(screenshot.id);
+                      }}
                     >
                       <img
                         src={screenshot.objectUrl}
@@ -505,7 +721,7 @@ function App() {
                           {screenshot.sourceUrl ?? screenshot.file.name}
                         </p>
                         <p className='text-xs text-muted-foreground'>
-                          Shot {index + 1} · {screenshot.width}x{screenshot.height}
+                          Shot {index + 1} · {screenshot.device} · {Math.round(screenshot.placement.rotation)}deg
                         </p>
                       </div>
                       <Button
@@ -513,7 +729,10 @@ function App() {
                         variant='ghost'
                         size='sm'
                         className='h-8 w-8 p-0 text-muted-foreground'
-                        onClick={() => removeScreenshot(screenshot.id)}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          removeScreenshot(screenshot.id);
+                        }}
                         aria-label={`Remove ${screenshot.file.name}`}
                       >
                         <X className='h-4 w-4' />
@@ -532,106 +751,137 @@ function App() {
                   options={Object.entries(OUTPUT_PRESETS).map(([value, output]) => ({ label: output.label, value }))}
                   onChange={(value) => setCustomSetting('preset', value as OutputPreset)}
                 />
+                <SegmentedControl
+                  label='Starter layout'
+                  value={settings.layout}
+                  options={[
+                    { label: 'Center', value: 'center' },
+                    { label: 'Overlap', value: 'overlap' },
+                    { label: 'Row', value: 'row' },
+                  ]}
+                  onChange={(value) => setCustomSetting('layout', value as LayoutStyle)}
+                />
+                <RangeControl
+                  label='Starter tilt'
+                  value={settings.rotation}
+                  min={0}
+                  max={16}
+                  step={1}
+                  onChange={(value) => setCustomSetting('rotation', value)}
+                />
+                <Button type='button' variant='outline' onClick={arrangeScreenshots} className='w-full gap-2'>
+                  <Maximize2 className='h-4 w-4' />
+                  Arrange shots
+                </Button>
               </ControlCard>
 
-            <ControlCard icon={<ImagePlus className='h-4 w-4' />} title='Screenshots'>
-              <SegmentedControl
-                label='Visible shots'
-                value={String(visibleCount)}
-                options={[
-                  { label: '1', value: '1' },
-                  { label: '2', value: '2' },
-                  { label: '3', value: '3' },
-                ]}
-                onChange={(value) => setCustomSetting('count', Number(value) as 1 | 2 | 3)}
-              />
-              <SegmentedControl
-                label='Layout'
-                value={settings.layout}
-                options={[
-                  { label: 'Center', value: 'center' },
-                  { label: 'Overlap', value: 'overlap' },
-                  { label: 'Row', value: 'row' },
-                ]}
-                onChange={(value) => setCustomSetting('layout', value as LayoutStyle)}
-              />
-            </ControlCard>
+              {selectedScreenshot && (
+                <ControlCard
+                  icon={<MonitorSmartphone className='h-4 w-4' />}
+                  title='Selected shot'
+                  action={
+                    <span className='rounded-full bg-accent px-2 py-1 text-xs font-semibold text-[var(--brand-accent-strong)]'>
+                      Shot {selectedIndex}
+                    </span>
+                  }
+                >
+                  <SegmentedControl
+                    label='Frame'
+                    value={selectedScreenshot.device}
+                    options={[
+                      { label: 'None', value: 'none' },
+                      { label: 'Phone', value: 'phone' },
+                      { label: 'Browser', value: 'browser' },
+                    ]}
+                    onChange={(value) => updateScreenshot(selectedScreenshot.id, { device: value as DeviceStyle })}
+                  />
+                  <RangeControl
+                    label='Rotation'
+                    value={Math.round(selectedScreenshot.placement.rotation)}
+                    min={-30}
+                    max={30}
+                    step={1}
+                    onChange={(value) => updatePlacement(selectedScreenshot.id, { rotation: value })}
+                  />
+                  <div className='grid grid-cols-2 gap-2'>
+                    <Button
+                      type='button'
+                      variant='outline'
+                      onClick={() => moveSelectedLayer(-1)}
+                      disabled={!selectedLayerState.canSendBack}
+                      className='gap-2'
+                    >
+                      <SendToBack className='h-4 w-4' />
+                      Back
+                    </Button>
+                    <Button
+                      type='button'
+                      variant='outline'
+                      onClick={() => moveSelectedLayer(1)}
+                      disabled={!selectedLayerState.canBringForward}
+                      className='gap-2'
+                    >
+                      <Layers className='h-4 w-4' />
+                      Front
+                    </Button>
+                  </div>
+                </ControlCard>
+              )}
 
-            <ControlCard
-              icon={<Palette className='h-4 w-4' />}
-              title='Background'
-              action={
-                <span className='rounded-full bg-accent px-2 py-1 text-xs font-semibold text-[var(--brand-accent-strong)]'>
-                  {activePresetLabel}
-                </span>
-              }
-            >
-              <PresetGrid activePreset={activePreset} onSelect={applyMockupPreset} />
-              <Divider />
-              <SegmentedControl
-                label='Mode'
-                value={settings.background}
-                options={[
-                  { label: 'Solid', value: 'solid' },
-                  { label: 'Gradient', value: 'gradient' },
-                  { label: 'Pattern', value: 'pattern' },
-                ]}
-                onChange={(value) => setCustomSetting('background', value as BackgroundStyle)}
-              />
-              <BackgroundControls settings={settings} setCustomSetting={setCustomSetting} setSettings={setSettings} />
-            </ControlCard>
+              <ControlCard
+                icon={<Palette className='h-4 w-4' />}
+                title='Background'
+                action={
+                  <span className='rounded-full bg-accent px-2 py-1 text-xs font-semibold text-[var(--brand-accent-strong)]'>
+                    {activePresetLabel}
+                  </span>
+                }
+              >
+                <PresetGrid activePreset={activePreset} onSelect={applyMockupPreset} />
+                <Divider />
+                <SegmentedControl
+                  label='Mode'
+                  value={settings.background}
+                  options={[
+                    { label: 'Solid', value: 'solid' },
+                    { label: 'Gradient', value: 'gradient' },
+                    { label: 'Pattern', value: 'pattern' },
+                  ]}
+                  onChange={(value) => setCustomSetting('background', value as BackgroundStyle)}
+                />
+                <BackgroundControls settings={settings} setCustomSetting={setCustomSetting} setSettings={setSettings} />
+              </ControlCard>
 
-            <ControlCard icon={<MonitorSmartphone className='h-4 w-4' />} title='Frame'>
-              <SegmentedControl
-                label='Device'
-                value={settings.device}
-                options={[
-                  { label: 'None', value: 'none' },
-                  { label: 'Phone', value: 'phone' },
-                  { label: 'Browser', value: 'browser' },
-                ]}
-                onChange={(value) => setCustomSetting('device', value as DeviceStyle)}
-              />
-            </ControlCard>
-
-            <ControlCard icon={<SlidersHorizontal className='h-4 w-4' />} title='Effects'>
-              <RangeControl
-                label='Padding'
-                value={settings.padding}
-                min={48}
-                max={220}
-                step={4}
-                onChange={(value) => setCustomSetting('padding', value)}
-              />
-              <RangeControl
-                label='Corner radius'
-                value={settings.radius}
-                min={0}
-                max={64}
-                step={2}
-                onChange={(value) => setCustomSetting('radius', value)}
-              />
-              <RangeControl
-                label='Shadow'
-                value={settings.shadow}
-                min={10}
-                max={110}
-                step={2}
-                onChange={(value) => setCustomSetting('shadow', value)}
-              />
-              <RangeControl
-                label='Rotation'
-                value={settings.rotation}
-                min={0}
-                max={16}
-                step={1}
-                onChange={(value) => setCustomSetting('rotation', value)}
-              />
-              <Button type='button' variant='ghost' onClick={resetAll} className='w-full gap-2'>
-                <RotateCcw className='h-4 w-4' />
-                Reset all
-              </Button>
-            </ControlCard>
+              <ControlCard icon={<SlidersHorizontal className='h-4 w-4' />} title='Effects'>
+                <RangeControl
+                  label='Padding'
+                  value={settings.padding}
+                  min={48}
+                  max={220}
+                  step={4}
+                  onChange={(value) => setCustomSetting('padding', value)}
+                />
+                <RangeControl
+                  label='Corner radius'
+                  value={settings.radius}
+                  min={0}
+                  max={64}
+                  step={2}
+                  onChange={(value) => setCustomSetting('radius', value)}
+                />
+                <RangeControl
+                  label='Shadow'
+                  value={settings.shadow}
+                  min={10}
+                  max={110}
+                  step={2}
+                  onChange={(value) => setCustomSetting('shadow', value)}
+                />
+                <Button type='button' variant='ghost' onClick={resetAll} className='w-full gap-2'>
+                  <RotateCcw className='h-4 w-4' />
+                  Reset all
+                </Button>
+              </ControlCard>
             </div>
           </aside>
         </div>
@@ -942,6 +1192,8 @@ async function loadScreenshot(file: File): Promise<UploadedScreenshot> {
     image,
     width: image.naturalWidth,
     height: image.naturalHeight,
+    device: 'phone',
+    placement: { ...DEFAULT_PLACEMENT },
   };
 }
 
@@ -992,4 +1244,100 @@ function buildScreenshotServiceUrl(url: string) {
   });
 
   return `https://api.microlink.io/?${params.toString()}`;
+}
+
+function hitTestCanvas(
+  point: Point,
+  screenshots: UploadedScreenshot[],
+  presetId: OutputPreset,
+  selectedId: string | null,
+): CanvasHit | null {
+  const preset = OUTPUT_PRESETS[presetId];
+  const selected = screenshots.find((screenshot) => screenshot.id === selectedId);
+  if (selected) {
+    const handleHit = hitTestHandles(point, selected, preset.width, preset.height);
+    if (handleHit) return { id: selected.id, action: handleHit };
+  }
+
+  const ordered = [...screenshots].sort((a, b) => b.placement.zIndex - a.placement.zIndex);
+  const target = ordered.find((screenshot) => pointInPlacement(point, screenshot.placement, preset.width, preset.height));
+  return target ? { id: target.id, action: 'move' } : null;
+}
+
+function hitTestHandles(point: Point, screenshot: UploadedScreenshot, width: number, height: number): 'resize' | 'rotate' | null {
+  const handles = getHandlePoints(screenshot.placement, width, height);
+  const threshold = Math.max(24, Math.min(width, height) * 0.018);
+  if (distance(point, handles.rotate) <= threshold * 1.25) return 'rotate';
+  if (handles.corners.some((corner) => distance(point, corner) <= threshold)) return 'resize';
+  return null;
+}
+
+function pointInPlacement(point: Point, placement: MockupPlacement, width: number, height: number) {
+  const center = placementCenter(placement, width, height);
+  const local = inverseRotatePoint(point, center, (placement.rotation * Math.PI) / 180);
+  const itemWidth = placement.width * width;
+  const itemHeight = placement.height * height;
+  return (
+    Math.abs(local.x - center.x) <= itemWidth / 2 &&
+    Math.abs(local.y - center.y) <= itemHeight / 2
+  );
+}
+
+function getHandlePoints(placement: MockupPlacement, width: number, height: number) {
+  const center = placementCenter(placement, width, height);
+  const itemWidth = placement.width * width;
+  const itemHeight = placement.height * height;
+  const rotation = (placement.rotation * Math.PI) / 180;
+  const x = center.x - itemWidth / 2;
+  const y = center.y - itemHeight / 2;
+  const corners = [
+    { x, y },
+    { x: x + itemWidth, y },
+    { x: x + itemWidth, y: y + itemHeight },
+    { x, y: y + itemHeight },
+  ].map((corner) => rotatePoint(corner, center, rotation));
+  const rotate = rotatePoint({ x: center.x, y: y - Math.max(48, Math.min(width, height) * 0.04) }, center, rotation);
+  return { corners, rotate };
+}
+
+function placementCenter(placement: MockupPlacement, width: number, height: number) {
+  return { x: placement.centerX * width, y: placement.centerY * height };
+}
+
+function rotatePoint(point: Point, center: Point, radians: number) {
+  const cos = Math.cos(radians);
+  const sin = Math.sin(radians);
+  const dx = point.x - center.x;
+  const dy = point.y - center.y;
+  return {
+    x: center.x + dx * cos - dy * sin,
+    y: center.y + dx * sin + dy * cos,
+  };
+}
+
+function inverseRotatePoint(point: Point, center: Point, radians: number) {
+  return rotatePoint(point, center, -radians);
+}
+
+function distance(a: Point, b: Point) {
+  return Math.hypot(a.x - b.x, a.y - b.y);
+}
+
+function normalizeZIndex<T extends PlacedMockupImage>(items: T[]): T[] {
+  return [...items]
+    .sort((a, b) => a.placement.zIndex - b.placement.zIndex)
+    .map((item, index) => ({ ...item, placement: { ...item.placement, zIndex: index } }));
+}
+
+function swapLayer<T extends PlacedMockupImage>(items: T[], id: string, direction: -1 | 1): T[] {
+  const ordered = [...items].sort((a, b) => a.placement.zIndex - b.placement.zIndex);
+  const index = ordered.findIndex((item) => item.id === id);
+  const nextIndex = index + direction;
+  if (index < 0 || nextIndex < 0 || nextIndex >= ordered.length) return items;
+  [ordered[index], ordered[nextIndex]] = [ordered[nextIndex], ordered[index]];
+  return ordered.map((item, nextZIndex) => ({ ...item, placement: { ...item.placement, zIndex: nextZIndex } }));
+}
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
 }

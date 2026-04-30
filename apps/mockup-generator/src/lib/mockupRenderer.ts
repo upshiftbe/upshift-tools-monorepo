@@ -16,12 +16,25 @@ export interface MockupImage {
   height: number;
 }
 
+export interface MockupPlacement {
+  centerX: number;
+  centerY: number;
+  width: number;
+  height: number;
+  rotation: number;
+  zIndex: number;
+}
+
+export interface PlacedMockupImage extends MockupImage {
+  id: string;
+  device: DeviceStyle;
+  placement: MockupPlacement;
+}
+
 export interface MockupSettings {
   preset: OutputPreset;
   background: BackgroundStyle;
-  device: DeviceStyle;
   layout: LayoutStyle;
-  count: 1 | 2 | 3;
   padding: number;
   radius: number;
   shadow: number;
@@ -36,6 +49,11 @@ export interface MockupSettings {
   patternScale: number;
 }
 
+export interface RenderOptions {
+  selectedId?: string | null;
+  showControls?: boolean;
+}
+
 interface Rect {
   x: number;
   y: number;
@@ -43,7 +61,46 @@ interface Rect {
   height: number;
 }
 
-export function renderMockup(canvas: HTMLCanvasElement, images: MockupImage[], settings: MockupSettings) {
+export function createDefaultPlacements<T extends MockupImage>(
+  images: T[],
+  settings: MockupSettings,
+  device: DeviceStyle = 'phone',
+): Array<T & { device: DeviceStyle; placement: MockupPlacement }> {
+  const preset = OUTPUT_PRESETS[settings.preset];
+  const selected = images.slice(0, 3);
+  const scale = Math.min(preset.width, preset.height) / 1200;
+  const inset = settings.padding * scale;
+  const stage: Rect = {
+    x: inset,
+    y: inset,
+    width: preset.width - inset * 2,
+    height: preset.height - inset * 2,
+  };
+  const slots = getSlots(stage, selected.length || 1, settings.layout, preset.width / preset.height);
+
+  return selected.map((item, index) => {
+    const slot = slots[index] ?? slots[0];
+    return {
+      ...item,
+      device: hasDevice(item) ? item.device : device,
+      placement: {
+        centerX: clamp01((slot.x + slot.width / 2) / preset.width),
+        centerY: clamp01((slot.y + slot.height / 2) / preset.height),
+        width: clamp(slot.width / preset.width, 0.08, 0.96),
+        height: clamp(slot.height / preset.height, 0.08, 0.96),
+        rotation: getRotation(index, selected.length, settings.layout, settings.rotation),
+        zIndex: index,
+      },
+    };
+  });
+}
+
+export function renderMockup(
+  canvas: HTMLCanvasElement,
+  images: PlacedMockupImage[],
+  settings: MockupSettings,
+  options: RenderOptions = {},
+) {
   const preset = OUTPUT_PRESETS[settings.preset];
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
@@ -53,26 +110,46 @@ export function renderMockup(canvas: HTMLCanvasElement, images: MockupImage[], s
   ctx.clearRect(0, 0, preset.width, preset.height);
   drawBackground(ctx, preset.width, preset.height, settings);
 
-  const selected = images.slice(0, settings.count);
-  if (!selected.length) {
+  if (!images.length) {
     drawEmptyState(ctx, preset.width, preset.height);
     return;
   }
 
   const scale = Math.min(preset.width, preset.height) / 1200;
-  const inset = settings.padding * scale;
-  const stage: Rect = {
-    x: inset,
-    y: inset,
-    width: preset.width - inset * 2,
-    height: preset.height - inset * 2,
-  };
-  const slots = getSlots(stage, selected.length, settings.layout, preset.width / preset.height);
+  const sorted = [...images].sort((a, b) => a.placement.zIndex - b.placement.zIndex);
 
-  selected.forEach((item, index) => {
-    const rotation = getRotation(index, selected.length, settings.layout, settings.rotation);
-    drawDevice(ctx, item, slots[index], settings, rotation, scale);
+  sorted.forEach((item) => {
+    const slot = placementToRect(item.placement, preset.width, preset.height);
+    drawDevice(ctx, item, slot, settings, item.placement.rotation, scale, item.device);
   });
+
+  if (options.showControls && options.selectedId) {
+    const selected = sorted.find((item) => item.id === options.selectedId);
+    if (selected) drawSelectionControls(ctx, selected, preset.width, preset.height);
+  }
+}
+
+function hasDevice(item: MockupImage): item is MockupImage & { device: DeviceStyle } {
+  return 'device' in item && typeof item.device === 'string';
+}
+
+function clamp01(value: number) {
+  return clamp(value, 0, 1);
+}
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function placementToRect(placement: MockupPlacement, width: number, height: number): Rect {
+  const itemWidth = placement.width * width;
+  const itemHeight = placement.height * height;
+  return {
+    x: placement.centerX * width - itemWidth / 2,
+    y: placement.centerY * height - itemHeight / 2,
+    width: itemWidth,
+    height: itemHeight,
+  };
 }
 
 function drawBackground(ctx: CanvasRenderingContext2D, width: number, height: number, settings: MockupSettings) {
@@ -239,13 +316,14 @@ function drawDevice(
   settings: MockupSettings,
   degrees: number,
   scale: number,
+  device: DeviceStyle,
 ) {
   ctx.save();
   ctx.translate(slot.x + slot.width / 2, slot.y + slot.height / 2);
   ctx.rotate((degrees * Math.PI) / 180);
 
-  if (settings.device === 'phone') drawPhone(ctx, item, slot.width, slot.height, settings, scale);
-  else if (settings.device === 'browser') drawBrowser(ctx, item, slot.width, slot.height, settings, scale);
+  if (device === 'phone') drawPhone(ctx, item, slot.width, slot.height, settings, scale);
+  else if (device === 'browser') drawBrowser(ctx, item, slot.width, slot.height, settings, scale);
   else drawBareImage(ctx, item, slot.width, slot.height, settings, scale);
 
   ctx.restore();
@@ -349,6 +427,63 @@ function drawBrowser(
   clipBottomRounded(ctx, screen, radius);
   drawImageCover(ctx, item.image, screen, item.width / item.height);
   ctx.restore();
+}
+
+function drawSelectionControls(ctx: CanvasRenderingContext2D, item: PlacedMockupImage, width: number, height: number) {
+  const rect = placementToRect(item.placement, width, height);
+  const center = { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
+  const rotation = (item.placement.rotation * Math.PI) / 180;
+  const corners = getRotatedCorners(rect, center, rotation);
+  const rotateHandle = rotatePoint({ x: center.x, y: rect.y - Math.max(48, Math.min(width, height) * 0.04) }, center, rotation);
+
+  ctx.save();
+  ctx.strokeStyle = '#06c2a4';
+  ctx.lineWidth = Math.max(3, Math.min(width, height) / 360);
+  ctx.setLineDash([14, 10]);
+  ctx.beginPath();
+  ctx.moveTo(corners[0].x, corners[0].y);
+  corners.slice(1).forEach((corner) => ctx.lineTo(corner.x, corner.y));
+  ctx.closePath();
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.beginPath();
+  ctx.moveTo((corners[0].x + corners[1].x) / 2, (corners[0].y + corners[1].y) / 2);
+  ctx.lineTo(rotateHandle.x, rotateHandle.y);
+  ctx.stroke();
+
+  const handleSize = Math.max(18, Math.min(width, height) * 0.018);
+  ctx.fillStyle = '#fffcf7';
+  ctx.strokeStyle = '#06c2a4';
+  corners.forEach((corner) => {
+    roundRect(ctx, corner.x - handleSize / 2, corner.y - handleSize / 2, handleSize, handleSize, handleSize * 0.22);
+    ctx.fill();
+    ctx.stroke();
+  });
+  ctx.beginPath();
+  ctx.arc(rotateHandle.x, rotateHandle.y, handleSize * 0.62, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+  ctx.restore();
+}
+
+function getRotatedCorners(rect: Rect, center: { x: number; y: number }, rotation: number) {
+  return [
+    { x: rect.x, y: rect.y },
+    { x: rect.x + rect.width, y: rect.y },
+    { x: rect.x + rect.width, y: rect.y + rect.height },
+    { x: rect.x, y: rect.y + rect.height },
+  ].map((point) => rotatePoint(point, center, rotation));
+}
+
+function rotatePoint(point: { x: number; y: number }, center: { x: number; y: number }, radians: number) {
+  const cos = Math.cos(radians);
+  const sin = Math.sin(radians);
+  const dx = point.x - center.x;
+  const dy = point.y - center.y;
+  return {
+    x: center.x + dx * cos - dy * sin,
+    y: center.y + dx * sin + dy * cos,
+  };
 }
 
 function fitRect(aspect: number, maxWidth: number, maxHeight: number): Rect {
