@@ -1,8 +1,9 @@
-import { Select, type SelectProps } from '@upshift-tools/shared-ui'
+import { Select } from '@upshift-tools/shared-ui'
+import type { SelectHTMLAttributes } from 'react'
 import { SCHEMA_TYPES } from '~/types/schema'
 import type { SchemaType } from '~/types/schema'
 
-interface SchemaTypeSelectorProps extends Omit<SelectProps, 'children'> {
+interface SchemaTypeSelectorProps extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'children' | 'value' | 'onChange'> {
   value: SchemaType
   onValueChange: (value: SchemaType) => void
 }

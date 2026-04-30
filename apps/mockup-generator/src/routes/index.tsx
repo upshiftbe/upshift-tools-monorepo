@@ -5,15 +5,18 @@ import {
   Copy,
   Download,
   ImagePlus,
+  LayoutTemplate,
   Loader2,
   MonitorSmartphone,
+  Palette,
   RotateCcw,
+  SlidersHorizontal,
   Sparkles,
   Trash2,
   Upload,
   X,
 } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
   OUTPUT_PRESETS,
   renderMockup,
@@ -35,25 +38,99 @@ interface UploadedScreenshot extends MockupImage {
   objectUrl: string;
 }
 
+type MockupPresetId = 'upshift-warm' | 'aqua-showcase' | 'editorial-brown' | 'minimal-paper' | 'custom';
+
 const DEFAULT_SETTINGS: MockupSettings = {
   preset: 'widescreen',
-  background: 'gradient',
+  background: 'pattern',
   device: 'phone',
   layout: 'overlap',
   count: 3,
-  padding: 118,
-  radius: 34,
-  shadow: 62,
-  rotation: 8,
-  solidColor: '#e8f5f8',
-  gradientStart: '#41b8dc',
-  gradientEnd: '#08758a',
-  gradientAngle: 115,
+  padding: 126,
+  radius: 28,
+  shadow: 44,
+  rotation: 6,
+  solidColor: '#f8f5ef',
+  gradientStart: '#fffcf7',
+  gradientEnd: '#f3ede3',
+  gradientAngle: 120,
   patternBase: '#f8f5ef',
   patternColor: '#16110f',
-  patternOpacity: 7,
+  patternOpacity: 6,
   patternScale: 36,
 };
+
+const MOCKUP_PRESETS: Array<{
+  id: Exclude<MockupPresetId, 'custom'>;
+  name: string;
+  description: string;
+  swatch: string;
+  settings: Partial<MockupSettings>;
+}> = [
+  {
+    id: 'upshift-warm',
+    name: 'Upshift Warm',
+    description: 'Warm paper, subtle grid, calm depth.',
+    swatch: 'linear-gradient(135deg, #f8f5ef, #fffcf7)',
+    settings: {
+      background: 'pattern',
+      patternBase: '#f8f5ef',
+      patternColor: '#16110f',
+      patternOpacity: 6,
+      patternScale: 36,
+      shadow: 44,
+      padding: 126,
+      radius: 28,
+      rotation: 6,
+    },
+  },
+  {
+    id: 'aqua-showcase',
+    name: 'Aqua Showcase',
+    description: 'Teal showcase for high-contrast case visuals.',
+    swatch: 'linear-gradient(135deg, #41b8dc, #08758a)',
+    settings: {
+      background: 'gradient',
+      gradientStart: '#41b8dc',
+      gradientEnd: '#08758a',
+      gradientAngle: 115,
+      shadow: 62,
+      padding: 118,
+      radius: 34,
+      rotation: 8,
+    },
+  },
+  {
+    id: 'editorial-brown',
+    name: 'Editorial Brown',
+    description: 'Premium warmth for crafted social posts.',
+    swatch: 'linear-gradient(135deg, #f1dccb, #74442f)',
+    settings: {
+      background: 'gradient',
+      gradientStart: '#f1dccb',
+      gradientEnd: '#74442f',
+      gradientAngle: 112,
+      shadow: 54,
+      padding: 122,
+      radius: 30,
+      rotation: 7,
+    },
+  },
+  {
+    id: 'minimal-paper',
+    name: 'Minimal Paper',
+    description: 'Clean solid surface with restrained shadows.',
+    swatch: 'linear-gradient(135deg, #fffcf7, #f8f5ef)',
+    settings: {
+      background: 'solid',
+      solidColor: '#fffcf7',
+      shadow: 28,
+      padding: 140,
+      radius: 22,
+      rotation: 0,
+    },
+  },
+];
 
 function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -61,12 +138,14 @@ function App() {
   const screenshotsRef = useRef<UploadedScreenshot[]>([]);
   const [screenshots, setScreenshots] = useState<UploadedScreenshot[]>([]);
   const [settings, setSettings] = useState<MockupSettings>(DEFAULT_SETTINGS);
+  const [activePreset, setActivePreset] = useState<MockupPresetId>('upshift-warm');
   const [isDragging, setIsDragging] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [copyStatus, setCopyStatus] = useState<'idle' | 'copied' | 'error'>('idle');
 
   const visibleCount = Math.min(settings.count, Math.max(1, screenshots.length || settings.count)) as 1 | 2 | 3;
   const preset = OUTPUT_PRESETS[settings.preset];
+  const activePresetLabel = MOCKUP_PRESETS.find((item) => item.id === activePreset)?.name ?? 'Custom';
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -81,6 +160,18 @@ function App() {
     return () => {
       screenshotsRef.current.forEach((screenshot) => URL.revokeObjectURL(screenshot.objectUrl));
     };
+  }, []);
+
+  const setCustomSetting = useCallback(<Key extends keyof MockupSettings>(key: Key, value: MockupSettings[Key]) => {
+    setSettings((prev) => ({ ...prev, [key]: value }));
+    setActivePreset('custom');
+  }, []);
+
+  const applyMockupPreset = useCallback((presetId: Exclude<MockupPresetId, 'custom'>) => {
+    const nextPreset = MOCKUP_PRESETS.find((item) => item.id === presetId);
+    if (!nextPreset) return;
+    setSettings((prev) => ({ ...prev, ...nextPreset.settings }));
+    setActivePreset(presetId);
   }, []);
 
   const processFiles = useCallback(async (incoming: File[]) => {
@@ -131,6 +222,7 @@ function App() {
       return [];
     });
     setSettings(DEFAULT_SETTINGS);
+    setActivePreset('upshift-warm');
     setCopyStatus('idle');
   }, []);
 
@@ -175,20 +267,19 @@ function App() {
   const selectedImages = useMemo(() => screenshots.slice(0, visibleCount), [screenshots, visibleCount]);
 
   return (
-    <div className='min-h-screen bg-background text-foreground'>
+    <div className='min-h-screen text-foreground'>
       <section className='mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10'>
-        <header className='mb-6 flex flex-col gap-3 border-b border-border pb-6 lg:flex-row lg:items-end lg:justify-between'>
+        <header className='mb-7 flex flex-col gap-3 border-b border-border pb-6 lg:flex-row lg:items-end lg:justify-between'>
           <div className='max-w-3xl'>
             <p className='flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground'>
-              <Sparkles className='h-3.5 w-3.5 text-[var(--brand-accent-strong)]' />
+              <Sparkles className='h-3.5 w-3.5 text-[var(--brand-accent-strong)]' aria-hidden />
               Mockup Generator
             </p>
-            <h1 className='mt-2 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl'>
-              Turn screenshots into polished launch images
+            <h1 className='font-display mt-2 max-w-2xl text-3xl font-semibold leading-[1.08] tracking-tight text-foreground sm:text-4xl'>
+              Turn screenshots into launch-ready images
             </h1>
-            <p className='mt-3 text-sm leading-6 text-muted-foreground'>
-              Compose up to three screenshots into copyable PNG assets with canvas-rendered device frames, social
-              presets, gradients, shadows, and fast browser-only export.
+            <p className='mt-3 max-w-2xl text-base leading-7 text-muted-foreground'>
+              Compose up to 3 screenshots with warm brand presets, device frames, and canvas-native PNG export.
             </p>
           </div>
           <div className='rounded-[var(--radius)] border border-border bg-card px-3 py-2 text-sm text-muted-foreground'>
@@ -196,12 +287,12 @@ function App() {
           </div>
         </header>
 
-        <div className='grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-start'>
-          <main className='space-y-5 sticky top-[5rem]'>
+        <div className='grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px] xl:items-start'>
+          <main className='space-y-5'>
             <div
               className={[
-                'rounded-[var(--radius-xl)] border border-dashed transition duration-200',
-                'flex min-h-[172px] cursor-pointer flex-col items-center justify-center gap-3 p-6 text-center',
+                'rounded-[var(--radius-xl)] border border-dashed transition-colors duration-200',
+                'flex min-h-[164px] cursor-pointer flex-col items-center justify-center gap-3 p-6 text-center',
                 isDragging
                   ? 'border-[var(--brand-accent-strong)] bg-accent shadow-[var(--shadow-md)]'
                   : 'border-input bg-card hover:border-[var(--brand-accent-strong)]/50 hover:bg-accent/60',
@@ -213,7 +304,9 @@ function App() {
               onDragLeave={() => setIsDragging(false)}
               onDrop={handleDrop}
               onClick={() => inputRef.current?.click()}
-              onKeyDown={(event) => event.key === 'Enter' && inputRef.current?.click()}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') inputRef.current?.click();
+              }}
               role='button'
               tabIndex={0}
               aria-label='Upload screenshots'
@@ -222,7 +315,7 @@ function App() {
                 <Upload className='h-5 w-5' aria-hidden />
               </span>
               <div>
-                <p className='font-semibold text-foreground'>
+                <p className='font-display text-xl font-semibold text-foreground'>
                   {isDragging ? 'Drop screenshots here' : 'Upload screenshots'}
                 </p>
                 <p className='mt-1 text-sm text-muted-foreground'>Add 1-3 PNG, JPEG, WebP, or GIF files.</p>
@@ -239,60 +332,73 @@ function App() {
             </div>
 
             {screenshots.length > 0 && (
-              <div className='grid gap-2 sm:grid-cols-3'>
-                {screenshots.map((screenshot, index) => (
-                  <div
-                    key={screenshot.id}
-                    className='flex items-center gap-3 rounded-[var(--radius)] border border-border bg-card p-2 text-sm'
-                  >
-                    <img
-                      src={screenshot.objectUrl}
-                      alt=''
-                      className='h-12 w-16 shrink-0 rounded-[calc(var(--radius)-4px)] object-cover'
-                    />
-                    <div className='min-w-0 flex-1'>
-                      <p className='truncate font-medium text-foreground'>{screenshot.file.name}</p>
-                      <p className='text-xs text-muted-foreground'>
-                        Shot {index + 1} · {screenshot.width}x{screenshot.height}
-                      </p>
-                    </div>
-                    <Button
-                      type='button'
-                      variant='ghost'
-                      size='sm'
-                      className='h-8 w-8 p-0 text-muted-foreground'
-                      onClick={() => removeScreenshot(screenshot.id)}
-                      aria-label={`Remove ${screenshot.file.name}`}
+              <section aria-label='Uploaded screenshots' className='space-y-2'>
+                <div className='flex items-center justify-between gap-3'>
+                  <p className='text-sm font-semibold text-foreground'>Screenshots</p>
+                  <p className='text-xs text-muted-foreground'>{screenshots.length}/3 loaded</p>
+                </div>
+                <div className='grid gap-2 sm:grid-cols-3'>
+                  {screenshots.map((screenshot, index) => (
+                    <div
+                      key={screenshot.id}
+                      className='flex items-center gap-3 rounded-[var(--radius)] border border-border bg-card p-2 text-sm'
                     >
-                      <X className='h-4 w-4' />
-                    </Button>
-                  </div>
-                ))}
-              </div>
+                      <img
+                        src={screenshot.objectUrl}
+                        alt=''
+                        width={64}
+                        height={48}
+                        className='h-12 w-16 shrink-0 rounded-[calc(var(--radius)-4px)] object-cover'
+                      />
+                      <div className='min-w-0 flex-1'>
+                        <p className='truncate font-medium text-foreground'>{screenshot.file.name}</p>
+                        <p className='text-xs text-muted-foreground'>
+                          Shot {index + 1} · {screenshot.width}x{screenshot.height}
+                        </p>
+                      </div>
+                      <Button
+                        type='button'
+                        variant='ghost'
+                        size='sm'
+                        className='h-8 w-8 p-0 text-muted-foreground'
+                        onClick={() => removeScreenshot(screenshot.id)}
+                        aria-label={`Remove ${screenshot.file.name}`}
+                      >
+                        <X className='h-4 w-4' />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </section>
             )}
 
             <div className='space-y-4 lg:sticky lg:top-20'>
-              <div className='mockup-preview-enter overflow-hidden rounded-[var(--radius-xl)] border border-border bg-card p-3 shadow-[var(--shadow-sm)]'>
+              <div className='mockup-preview-enter overflow-hidden rounded-[var(--radius-xl)] border border-border bg-card p-3 shadow-[var(--shadow-card)]'>
                 <canvas ref={canvasRef} className='block h-auto w-full rounded-[calc(var(--radius-xl)-8px)]' />
               </div>
 
-              <div className='flex flex-col gap-2 rounded-[var(--radius)] border border-border bg-card/95 p-3 shadow-[var(--shadow-sm)] backdrop-blur sm:flex-row sm:items-center sm:justify-between'>
-                <p className='text-sm text-muted-foreground'>
-                  {selectedImages.length > 0
-                    ? `${selectedImages.length} screenshot${selectedImages.length === 1 ? '' : 's'} in the current composition.`
-                    : 'The preview is generated locally and exported from the same canvas.'}
-                </p>
-                <div className='flex flex-wrap gap-2'>
-                  <Button type='button' variant='outline' onClick={copyPng} className='gap-2' disabled={isExporting}>
-                    {isExporting ? <Loader2 className='h-4 w-4 animate-spin' /> : <Copy className='h-4 w-4' />}
-                    {copyStatus === 'copied' ? 'Copied' : 'Copy PNG'}
-                  </Button>
-                  <Button type='button' onClick={downloadPng} className='gap-2' disabled={isExporting}>
-                    <Download className='h-4 w-4' />
-                    Download PNG
-                  </Button>
-                </div>
-              </div>
+              <Card className='bg-card/95 backdrop-blur'>
+                <CardContent className='flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between'>
+                  <div className='min-w-0'>
+                    <p className='font-display text-base font-semibold text-foreground'>Export</p>
+                    <p className='text-sm text-muted-foreground'>
+                      {selectedImages.length > 0
+                        ? `${selectedImages.length} screenshot${selectedImages.length === 1 ? '' : 's'} · ${activePresetLabel}`
+                        : 'Preview renders locally from the same export canvas.'}
+                    </p>
+                  </div>
+                  <div className='flex flex-wrap gap-2'>
+                    <Button type='button' variant='outline' onClick={copyPng} className='gap-2' disabled={isExporting}>
+                      {isExporting ? <Loader2 className='h-4 w-4 animate-spin' /> : <Copy className='h-4 w-4' />}
+                      {copyStatus === 'copied' ? 'Copied' : 'Copy PNG'}
+                    </Button>
+                    <Button type='button' onClick={downloadPng} className='gap-2' disabled={isExporting}>
+                      <Download className='h-4 w-4' />
+                      Download PNG
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
 
               {copyStatus === 'error' && (
                 <div className='flex items-center gap-2 rounded-[var(--radius)] border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive'>
@@ -309,111 +415,110 @@ function App() {
             </div>
           </main>
 
-          <aside className='space-y-5 xl:sticky xl:top-20'>
-            <Card>
-              <CardHeader className='pb-2'>
-                <CardTitle className='flex items-center gap-2 text-base font-semibold'>
-                  <ImagePlus className='h-4 w-4 text-[var(--brand-accent-strong)]' />
-                  Composition
-                </CardTitle>
-              </CardHeader>
-              <CardContent className='space-y-5'>
-                <SegmentedControl
-                  label='Screenshots'
-                  value={String(visibleCount)}
-                  options={[
-                    { label: '1', value: '1' },
-                    { label: '2', value: '2' },
-                    { label: '3', value: '3' },
-                  ]}
-                  onChange={(value) => updateSetting(setSettings, 'count', Number(value) as 1 | 2 | 3)}
-                />
-                <SegmentedControl
-                  label='Preset'
-                  value={settings.preset}
-                  options={Object.entries(OUTPUT_PRESETS).map(([value, output]) => ({ label: output.label, value }))}
-                  onChange={(value) => updateSetting(setSettings, 'preset', value as OutputPreset)}
-                />
-                <SegmentedControl
-                  label='Layout'
-                  value={settings.layout}
-                  options={[
-                    { label: 'Center', value: 'center' },
-                    { label: 'Overlap', value: 'overlap' },
-                    { label: 'Row', value: 'row' },
-                  ]}
-                  onChange={(value) => updateSetting(setSettings, 'layout', value as LayoutStyle)}
-                />
-              </CardContent>
-            </Card>
+          <aside className='space-y-4 xl:sticky xl:top-20'>
+            <ControlCard icon={<LayoutTemplate className='h-4 w-4' />} title='Canvas'>
+              <SegmentedControl
+                label='Size'
+                value={settings.preset}
+                options={Object.entries(OUTPUT_PRESETS).map(([value, output]) => ({ label: output.label, value }))}
+                onChange={(value) => setCustomSetting('preset', value as OutputPreset)}
+              />
+            </ControlCard>
 
-            <Card>
-              <CardHeader className='pb-2'>
-                <CardTitle className='flex items-center gap-2 text-base font-semibold'>
-                  <MonitorSmartphone className='h-4 w-4 text-[var(--brand-accent-strong)]' />
-                  Presentation
-                </CardTitle>
-              </CardHeader>
-              <CardContent className='space-y-5'>
-                <SegmentedControl
-                  label='Frame'
-                  value={settings.device}
-                  options={[
-                    { label: 'None', value: 'none' },
-                    { label: 'Phone', value: 'phone' },
-                    { label: 'Browser', value: 'browser' },
-                  ]}
-                  onChange={(value) => updateSetting(setSettings, 'device', value as DeviceStyle)}
-                />
-                <SegmentedControl
-                  label='Background'
-                  value={settings.background}
-                  options={[
-                    { label: 'Solid', value: 'solid' },
-                    { label: 'Gradient', value: 'gradient' },
-                    { label: 'Pattern', value: 'pattern' },
-                  ]}
-                  onChange={(value) => updateSetting(setSettings, 'background', value as BackgroundStyle)}
-                />
-                <BackgroundControls settings={settings} setSettings={setSettings} />
-                <RangeControl
-                  label='Padding'
-                  value={settings.padding}
-                  min={48}
-                  max={220}
-                  step={4}
-                  onChange={(value) => updateSetting(setSettings, 'padding', value)}
-                />
-                <RangeControl
-                  label='Corner radius'
-                  value={settings.radius}
-                  min={0}
-                  max={64}
-                  step={2}
-                  onChange={(value) => updateSetting(setSettings, 'radius', value)}
-                />
-                <RangeControl
-                  label='Shadow'
-                  value={settings.shadow}
-                  min={10}
-                  max={110}
-                  step={2}
-                  onChange={(value) => updateSetting(setSettings, 'shadow', value)}
-                />
-                <RangeControl
-                  label='Rotation'
-                  value={settings.rotation}
-                  min={0}
-                  max={16}
-                  step={1}
-                  onChange={(value) => updateSetting(setSettings, 'rotation', value)}
-                />
-                <Button type='button' variant='ghost' onClick={resetAll} className='w-full gap-2'>
-                  <RotateCcw className='h-4 w-4' />
-                  Reset
-                </Button>
-              </CardContent>
-            </Card>
+            <ControlCard icon={<ImagePlus className='h-4 w-4' />} title='Screenshots'>
+              <SegmentedControl
+                label='Visible shots'
+                value={String(visibleCount)}
+                options={[
+                  { label: '1', value: '1' },
+                  { label: '2', value: '2' },
+                  { label: '3', value: '3' },
+                ]}
+                onChange={(value) => setCustomSetting('count', Number(value) as 1 | 2 | 3)}
+              />
+              <SegmentedControl
+                label='Layout'
+                value={settings.layout}
+                options={[
+                  { label: 'Center', value: 'center' },
+                  { label: 'Overlap', value: 'overlap' },
+                  { label: 'Row', value: 'row' },
+                ]}
+                onChange={(value) => setCustomSetting('layout', value as LayoutStyle)}
+              />
+            </ControlCard>
+
+            <ControlCard
+              icon={<Palette className='h-4 w-4' />}
+              title='Background'
+              action={<span className='rounded-full bg-accent px-2 py-1 text-xs font-semibold text-[var(--brand-accent-strong)]'>{activePresetLabel}</span>}
+            >
+              <PresetGrid activePreset={activePreset} onSelect={applyMockupPreset} />
+              <Divider />
+              <SegmentedControl
+                label='Mode'
+                value={settings.background}
+                options={[
+                  { label: 'Solid', value: 'solid' },
+                  { label: 'Gradient', value: 'gradient' },
+                  { label: 'Pattern', value: 'pattern' },
+                ]}
+                onChange={(value) => setCustomSetting('background', value as BackgroundStyle)}
+              />
+              <BackgroundControls settings={settings} setCustomSetting={setCustomSetting} setSettings={setSettings} />
+            </ControlCard>
+
+            <ControlCard icon={<MonitorSmartphone className='h-4 w-4' />} title='Frame'>
+              <SegmentedControl
+                label='Device'
+                value={settings.device}
+                options={[
+                  { label: 'None', value: 'none' },
+                  { label: 'Phone', value: 'phone' },
+                  { label: 'Browser', value: 'browser' },
+                ]}
+                onChange={(value) => setCustomSetting('device', value as DeviceStyle)}
+              />
+            </ControlCard>
+
+            <ControlCard icon={<SlidersHorizontal className='h-4 w-4' />} title='Effects'>
+              <RangeControl
+                label='Padding'
+                value={settings.padding}
+                min={48}
+                max={220}
+                step={4}
+                onChange={(value) => setCustomSetting('padding', value)}
+              />
+              <RangeControl
+                label='Corner radius'
+                value={settings.radius}
+                min={0}
+                max={64}
+                step={2}
+                onChange={(value) => setCustomSetting('radius', value)}
+              />
+              <RangeControl
+                label='Shadow'
+                value={settings.shadow}
+                min={10}
+                max={110}
+                step={2}
+                onChange={(value) => setCustomSetting('shadow', value)}
+              />
+              <RangeControl
+                label='Rotation'
+                value={settings.rotation}
+                min={0}
+                max={16}
+                step={1}
+                onChange={(value) => setCustomSetting('rotation', value)}
+              />
+              <Button type='button' variant='ghost' onClick={resetAll} className='w-full gap-2'>
+                <RotateCcw className='h-4 w-4' />
+                Reset all
+              </Button>
+            </ControlCard>
           </aside>
         </div>
       </section>
@@ -421,51 +526,101 @@ function App() {
   );
 }
 
-function updateSetting<Key extends keyof MockupSettings>(
-  setSettings: React.Dispatch<React.SetStateAction<MockupSettings>>,
-  key: Key,
-  value: MockupSettings[Key],
-) {
-  setSettings((prev) => ({ ...prev, [key]: value }));
+function ControlCard({
+  icon,
+  title,
+  action,
+  children,
+}: {
+  icon: ReactNode;
+  title: string;
+  action?: ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <Card>
+      <CardHeader className='flex-row items-center justify-between gap-3 pb-2'>
+        <CardTitle className='font-display flex items-center gap-2 text-lg font-semibold'>
+          <span className='text-[var(--brand-accent-strong)]'>{icon}</span>
+          {title}
+        </CardTitle>
+        {action}
+      </CardHeader>
+      <CardContent className='space-y-5'>{children}</CardContent>
+    </Card>
+  );
+}
+
+function PresetGrid({
+  activePreset,
+  onSelect,
+}: {
+  activePreset: MockupPresetId;
+  onSelect: (presetId: Exclude<MockupPresetId, 'custom'>) => void;
+}) {
+  return (
+    <div className='grid gap-2'>
+      {MOCKUP_PRESETS.map((preset) => (
+        <button
+          key={preset.id}
+          type='button'
+          onClick={() => onSelect(preset.id)}
+          className={[
+            'grid min-h-[70px] grid-cols-[44px_minmax(0,1fr)] items-center gap-3 rounded-[var(--radius)] border p-2 text-left transition',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+            activePreset === preset.id
+              ? 'border-[var(--brand-accent-strong)] bg-accent/80'
+              : 'border-border bg-transparent hover:bg-muted/60',
+          ].join(' ')}
+        >
+          <span className='h-11 w-11 rounded-[calc(var(--radius)-2px)] border border-border' style={{ background: preset.swatch }} />
+          <span className='min-w-0'>
+            <span className='block font-semibold text-foreground'>{preset.name}</span>
+            <span className='block truncate text-xs text-muted-foreground'>{preset.description}</span>
+          </span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function Divider() {
+  return <div className='h-px bg-border' aria-hidden />;
 }
 
 function BackgroundControls({
   settings,
+  setCustomSetting,
   setSettings,
 }: {
   settings: MockupSettings;
+  setCustomSetting: <Key extends keyof MockupSettings>(key: Key, value: MockupSettings[Key]) => void;
   setSettings: React.Dispatch<React.SetStateAction<MockupSettings>>;
 }) {
   if (settings.background === 'solid') {
     return (
-      <div className='space-y-3 rounded-[var(--radius)] border border-border bg-muted/45 p-3'>
-        <ColorControl
-          label='Solid color'
-          value={settings.solidColor}
-          onChange={(value) => updateSetting(setSettings, 'solidColor', value)}
-        />
+      <fieldset className='space-y-3'>
+        <legend className='sr-only'>Solid background controls</legend>
+        <ColorControl label='Solid color' value={settings.solidColor} onChange={(value) => setCustomSetting('solidColor', value)} />
         <BackgroundPresetRow
-          presets={['#e8f5f8', '#f8f5ef', '#fffcf7', '#16110f', '#d9ecff']}
-          onSelect={(value) => updateSetting(setSettings, 'solidColor', value)}
+          presets={['#fffcf7', '#f8f5ef', '#f3ede3', '#16110f', '#e8f5f8']}
+          onSelect={(value) => setCustomSetting('solidColor', value)}
         />
-      </div>
+      </fieldset>
     );
   }
 
   if (settings.background === 'gradient') {
     return (
-      <div className='space-y-4 rounded-[var(--radius)] border border-border bg-muted/45 p-3'>
+      <fieldset className='space-y-4'>
+        <legend className='sr-only'>Gradient background controls</legend>
         <div className='grid grid-cols-2 gap-3'>
           <ColorControl
             label='Start'
             value={settings.gradientStart}
-            onChange={(value) => updateSetting(setSettings, 'gradientStart', value)}
+            onChange={(value) => setCustomSetting('gradientStart', value)}
           />
-          <ColorControl
-            label='End'
-            value={settings.gradientEnd}
-            onChange={(value) => updateSetting(setSettings, 'gradientEnd', value)}
-          />
+          <ColorControl label='End' value={settings.gradientEnd} onChange={(value) => setCustomSetting('gradientEnd', value)} />
         </div>
         <RangeControl
           label='Angle'
@@ -473,51 +628,45 @@ function BackgroundControls({
           min={0}
           max={360}
           step={5}
-          onChange={(value) => updateSetting(setSettings, 'gradientAngle', value)}
+          onChange={(value) => setCustomSetting('gradientAngle', value)}
         />
         <div className='grid grid-cols-3 gap-2'>
           {[
-            ['#41b8dc', '#08758a'],
+            ['#fffcf7', '#f3ede3'],
             ['#f1dccb', '#74442f'],
-            ['#f8f5ef', '#06c2a4'],
+            ['#41b8dc', '#08758a'],
           ].map(([start, end]) => (
             <button
               key={`${start}-${end}`}
               type='button'
-              className='h-9 rounded-[calc(var(--radius)-4px)] border border-border shadow-[var(--shadow-sm)] transition hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+              className='h-9 rounded-[calc(var(--radius)-4px)] border border-border shadow-[var(--shadow-sm)] transition-transform hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
               style={{ background: `linear-gradient(115deg, ${start}, ${end})` }}
-              onClick={() =>
-                setSettings((prev) => ({
-                  ...prev,
-                  gradientStart: start,
-                  gradientEnd: end,
-                }))
-              }
+              onClick={() => {
+                setSettings((prev) => ({ ...prev, gradientStart: start, gradientEnd: end }));
+                setCustomSetting('background', 'gradient');
+              }}
               aria-label={`Use ${start} to ${end} gradient`}
             />
           ))}
         </div>
-      </div>
+      </fieldset>
     );
   }
 
   return (
-    <div className='space-y-4 rounded-[var(--radius)] border border-border bg-muted/45 p-3'>
+    <fieldset className='space-y-4'>
+      <legend className='sr-only'>Pattern background controls</legend>
       <div className='grid grid-cols-2 gap-3'>
-        <ColorControl
-          label='Base'
-          value={settings.patternBase}
-          onChange={(value) => updateSetting(setSettings, 'patternBase', value)}
-        />
+        <ColorControl label='Base' value={settings.patternBase} onChange={(value) => setCustomSetting('patternBase', value)} />
         <ColorControl
           label='Pattern'
           value={settings.patternColor}
-          onChange={(value) => updateSetting(setSettings, 'patternColor', value)}
+          onChange={(value) => setCustomSetting('patternColor', value)}
         />
       </div>
       <BackgroundPresetRow
-        presets={['#f8f5ef', '#e8f5f8', '#f1dccb', '#16110f']}
-        onSelect={(value) => updateSetting(setSettings, 'patternBase', value)}
+        presets={['#f8f5ef', '#fffcf7', '#f3ede3', '#16110f']}
+        onSelect={(value) => setCustomSetting('patternBase', value)}
       />
       <RangeControl
         label='Pattern opacity'
@@ -525,7 +674,7 @@ function BackgroundControls({
         min={1}
         max={28}
         step={1}
-        onChange={(value) => updateSetting(setSettings, 'patternOpacity', value)}
+        onChange={(value) => setCustomSetting('patternOpacity', value)}
       />
       <RangeControl
         label='Pattern scale'
@@ -533,9 +682,9 @@ function BackgroundControls({
         min={18}
         max={84}
         step={2}
-        onChange={(value) => updateSetting(setSettings, 'patternScale', value)}
+        onChange={(value) => setCustomSetting('patternScale', value)}
       />
-    </div>
+    </fieldset>
   );
 }
 
@@ -555,8 +704,9 @@ function ColorControl({ label, value, onChange }: { label: string; value: string
           type='text'
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          className='min-w-0 flex-1 bg-transparent text-xs font-semibold uppercase text-foreground outline-none'
+          className='min-w-0 flex-1 bg-transparent text-xs font-semibold uppercase text-foreground outline-none focus-visible:ring-0'
           aria-label={`${label} hex value`}
+          spellCheck={false}
         />
       </span>
     </label>
@@ -570,7 +720,7 @@ function BackgroundPresetRow({ presets, onSelect }: { presets: string[]; onSelec
         <button
           key={color}
           type='button'
-          className='h-7 w-7 rounded-full border border-border shadow-[var(--shadow-sm)] transition hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+          className='h-7 w-7 rounded-full border border-border shadow-[var(--shadow-sm)] transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
           style={{ backgroundColor: color }}
           onClick={() => onSelect(color)}
           aria-label={`Use ${color}`}
@@ -594,14 +744,14 @@ function SegmentedControl({
   return (
     <div className='space-y-2'>
       <Label className='text-sm font-medium'>{label}</Label>
-      <div className='grid grid-cols-[repeat(auto-fit,minmax(64px,1fr))] gap-1 rounded-[var(--radius)] border border-border bg-muted p-1'>
+      <div className='grid grid-cols-[repeat(auto-fit,minmax(68px,1fr))] gap-1 rounded-[var(--radius)] border border-border bg-muted p-1'>
         {options.map((option) => (
           <button
             key={option.value}
             type='button'
             onClick={() => onChange(option.value)}
             className={[
-              'min-h-9 rounded-[calc(var(--radius)-4px)] px-2 text-xs font-semibold transition',
+              'min-h-9 rounded-[calc(var(--radius)-4px)] px-2 text-xs font-semibold transition-colors',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
               value === option.value
                 ? 'bg-card text-foreground shadow-[var(--shadow-sm)]'

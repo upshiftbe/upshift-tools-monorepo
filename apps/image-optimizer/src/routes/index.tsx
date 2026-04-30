@@ -114,12 +114,12 @@ function App() {
   const doneCount = files.filter((f) => f.status === 'done').length;
 
   return (
-    <div className='min-h-screen bg-background text-foreground'>
+    <div className='min-h-screen text-foreground'>
       <section className='mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10'>
         <header className='mb-6 flex flex-col gap-3 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between'>
           <div className='max-w-2xl'>
             <p className='text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground'>Image Optimizer</p>
-            <h1 className='mt-2 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl'>Compress browser-side images</h1>
+            <h1 className='font-display mt-2 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl'>Compress browser-side images</h1>
             <p className='mt-3 text-sm leading-6 text-muted-foreground'>
               Convert images to WebP or AVIF in the browser. Files stay local, and results are ready for direct download.
             </p>
@@ -181,7 +181,7 @@ function App() {
           <aside className='space-y-5 lg:sticky lg:top-20'>
         <Card>
           <CardHeader className='pb-2'>
-            <CardTitle className='flex items-center gap-2 text-base font-semibold text-foreground'>
+            <CardTitle className='font-display flex items-center gap-2 text-base font-semibold text-foreground'>
               <Settings2 className='h-4 w-4 shrink-0 text-[var(--brand-accent-strong)]' />
               Output settings
             </CardTitle>

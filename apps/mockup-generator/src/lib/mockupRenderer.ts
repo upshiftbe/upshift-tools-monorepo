@@ -176,7 +176,7 @@ function drawEmptyState(ctx: CanvasRenderingContext2D, width: number, height: nu
   ctx.fillStyle = '#16110f';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.font = `${Math.max(30, width * 0.03)}px Outfit, sans-serif`;
+  ctx.font = `${Math.max(30, width * 0.03)}px Bespoke Slab Variable, DM Sans, sans-serif`;
   ctx.fillText('Upload screenshots to begin', width / 2, height / 2);
   ctx.restore();
 }

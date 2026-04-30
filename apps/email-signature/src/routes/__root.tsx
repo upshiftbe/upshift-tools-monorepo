@@ -18,7 +18,7 @@ function RootComponent() {
               <span className="flex h-8 w-8 items-center justify-center rounded-[var(--radius)] bg-primary text-primary-foreground">
                 <Mail className="h-4 w-4" />
               </span>
-              <span className="text-base font-semibold tracking-tight">
+              <span className="font-display text-base font-semibold tracking-tight">
                 Email Signature
               </span>
             </>
@@ -33,6 +33,8 @@ function RootComponent() {
             },
           ],
         }}
+        mainClassName="flex flex-col page-bg brand-grid-bg"
+        dataShellVariant="soft"
         footer={{
           content: (
             <div className="flex flex-col items-center justify-center gap-2 text-sm sm:flex-row sm:gap-4">

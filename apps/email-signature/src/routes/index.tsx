@@ -62,7 +62,7 @@ function EmailSignaturePage() {
 
   if (!hydrated) {
     return (
-      <div className='min-h-screen bg-background px-4 py-8 text-foreground'>
+      <div className='min-h-screen px-4 py-8 text-foreground'>
         <div className='mx-auto flex max-w-6xl flex-col gap-8'>
           <div className='flex items-center justify-center py-20'>
             <p className='text-muted-foreground'>Loading</p>
@@ -73,7 +73,7 @@ function EmailSignaturePage() {
   }
 
   return (
-    <div className='min-h-screen bg-background px-4 py-8 text-foreground sm:px-6 sm:py-10'>
+    <div className='min-h-screen px-4 py-8 text-foreground sm:px-6 sm:py-10'>
       <div className='mx-auto flex max-w-7xl flex-col gap-6'>
         <AppHeader />
         <div className='grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_500px]'>
@@ -104,7 +104,7 @@ function EmailSignaturePage() {
           aria-labelledby='consent-heading'
         >
           <div className='w-full max-w-md rounded-[var(--radius-lg)] border border-border bg-card p-6 text-card-foreground shadow-[var(--shadow-lg)]'>
-            <h2 id='consent-heading' className='text-lg font-semibold text-foreground'>
+            <h2 id='consent-heading' className='font-display text-lg font-semibold text-foreground'>
               Cookie preferences
             </h2>
             <p className='mt-3 text-sm leading-relaxed text-muted-foreground'>

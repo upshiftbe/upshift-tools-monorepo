@@ -15,11 +15,11 @@ function SchemaMarkupPage() {
   const [jsonldData, setJsonldData] = useState<object | null>(null);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
           <header className="mb-6 border-b border-border pb-6">
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Schema Markup Generator</p>
-            <h1 className="mt-2 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+            <h1 className="font-display mt-2 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
               Build structured data without hand-editing JSON
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
@@ -29,7 +29,7 @@ function SchemaMarkupPage() {
 
           <Card className="mb-5">
             <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-base">
+              <CardTitle className="font-display flex items-center gap-2 text-base">
                 <Code2 className="h-4 w-4 text-[var(--brand-accent-strong)]" />
                 Schema type
               </CardTitle>

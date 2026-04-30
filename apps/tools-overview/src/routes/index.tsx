@@ -16,7 +16,7 @@ function OverviewPage() {
             <span className='flex h-8 w-8 items-center justify-center rounded-[var(--radius)] bg-primary text-primary-foreground'>
               <QrCode className='h-4 w-4' />
             </span>
-            <span className='text-base font-semibold tracking-tight'>Upshift Tools</span>
+            <span className='font-display text-base font-semibold tracking-tight'>Upshift Tools</span>
           </>
         ),
         logoHref: '/',
@@ -31,7 +31,7 @@ function OverviewPage() {
           <header className='mb-8 flex flex-col gap-3 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between'>
             <div className='max-w-2xl'>
               <p className='text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground'>Upshift workshop</p>
-              <h1 className='mt-2 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl'>Tools for practical digital work</h1>
+              <h1 className='font-display mt-2 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl'>Tools for practical digital work</h1>
               <p className='mt-3 max-w-2xl text-sm leading-6 text-muted-foreground'>
                 Lightweight utilities for everyday production tasks. Each tool runs in the browser and keeps the next action clear.
               </p>
@@ -73,7 +73,7 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
             <Icon className='h-5 w-5' />
           </div>
           <div className='min-w-0'>
-            <h2 className='text-lg font-semibold group-hover:text-foreground'>{tool.name}</h2>
+            <h2 className='font-display text-lg font-semibold group-hover:text-foreground'>{tool.name}</h2>
             <span className='mt-2 inline-flex items-center gap-2 text-sm font-semibold text-[var(--brand-accent-strong)]'>
               Open tool
               <ExternalLink className='h-4 w-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5' />

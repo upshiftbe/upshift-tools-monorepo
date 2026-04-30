@@ -199,7 +199,7 @@ export const SchemaForm = ({ schemaType, onDataChange }: SchemaFormProps) => {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle>{schemaType} schema</CardTitle>
+              <CardTitle className="font-display">{schemaType} schema</CardTitle>
               <Button type="button" variant="outline" onClick={handleReset}>
                 Reset
               </Button>

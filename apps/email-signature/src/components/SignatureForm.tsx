@@ -17,7 +17,7 @@ export function SignatureForm({ formState, errors, onFieldChange, onFieldBlur, o
       <CardHeader className="space-y-4 pb-2">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="space-y-1">
-            <CardTitle className="text-lg text-foreground">Signature details</CardTitle>
+            <CardTitle className="font-display text-lg text-foreground">Signature details</CardTitle>
             <CardDescription className="text-sm text-muted-foreground">
               Only the filled fields are copied into the final HTML snippet.
             </CardDescription>

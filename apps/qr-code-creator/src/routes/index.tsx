@@ -115,11 +115,11 @@ function App() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen text-foreground">
       <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
         <header className="mb-6 border-b border-border pb-6">
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">QR Code Creator</p>
-          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">Generate a production-ready QR code</h1>
+          <h1 className="font-display mt-2 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">Generate a production-ready QR code</h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
             Add content, adjust the module style, and export as SVG or PNG. Encoding happens locally in the browser.
           </p>
@@ -129,7 +129,7 @@ function App() {
         <div className="space-y-5">
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-base font-semibold text-foreground">
+              <CardTitle className="font-display flex items-center gap-2 text-base font-semibold text-foreground">
                 <Type className="h-4 w-4 text-[var(--brand-accent-strong)] shrink-0" />
                 Content
               </CardTitle>
@@ -167,7 +167,7 @@ function App() {
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-base font-semibold text-foreground">
+              <CardTitle className="font-display flex items-center gap-2 text-base font-semibold text-foreground">
                 <Shapes className="h-4 w-4 text-[var(--brand-accent-strong)] shrink-0" />
                 Style
               </CardTitle>
@@ -195,7 +195,7 @@ function App() {
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-base font-semibold text-foreground">
+              <CardTitle className="font-display flex items-center gap-2 text-base font-semibold text-foreground">
                 <ImagePlus className="h-4 w-4 text-[var(--brand-accent-strong)] shrink-0" />
                 Logo
               </CardTitle>
@@ -257,7 +257,7 @@ function App() {
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-base font-semibold text-foreground">
+              <CardTitle className="font-display flex items-center gap-2 text-base font-semibold text-foreground">
                 <Palette className="h-4 w-4 text-[var(--brand-accent-strong)] shrink-0" />
                 Colors
               </CardTitle>

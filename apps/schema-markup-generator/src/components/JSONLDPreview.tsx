@@ -29,7 +29,7 @@ export const JSONLDPreview = ({ data }: JSONLDPreviewProps) => {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>JSON-LD output</CardTitle>
+          <CardTitle className="font-display">JSON-LD output</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex min-h-[260px] flex-col items-center justify-center gap-3 rounded-[var(--radius)] border border-dashed border-input bg-muted/40 px-6 py-8 text-center">
@@ -48,7 +48,7 @@ export const JSONLDPreview = ({ data }: JSONLDPreviewProps) => {
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>JSON-LD output</CardTitle>
+          <CardTitle className="font-display">JSON-LD output</CardTitle>
           <Button
             variant="outline"
             size="sm"
