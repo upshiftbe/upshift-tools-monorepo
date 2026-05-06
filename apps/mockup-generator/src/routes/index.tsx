@@ -341,16 +341,17 @@ function App() {
 
   const updatePlacement = useCallback((id: string, update: Partial<MockupPlacement>) => {
     setScreenshots((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, placement: { ...item.placement, ...update } } : item,
-      ),
+      prev.map((item) => (item.id === id ? { ...item, placement: { ...item.placement, ...update } } : item)),
     );
   }, []);
 
-  const moveSelectedLayer = useCallback((direction: -1 | 1) => {
-    if (!selectedScreenshotId) return;
-    setScreenshots((prev) => swapLayer(prev, selectedScreenshotId, direction));
-  }, [selectedScreenshotId]);
+  const moveSelectedLayer = useCallback(
+    (direction: -1 | 1) => {
+      if (!selectedScreenshotId) return;
+      setScreenshots((prev) => swapLayer(prev, selectedScreenshotId, direction));
+    },
+    [selectedScreenshotId],
+  );
 
   const resetAll = useCallback(() => {
     setScreenshots((prev) => {
@@ -711,7 +712,7 @@ function App() {
                     >
                       <img
                         src={screenshot.objectUrl}
-                        alt=''
+                        alt={`Screenshot ${index + 1} preview (${screenshot.device} frame): ${screenshot.sourceUrl ?? screenshot.file.name}`}
                         width={64}
                         height={48}
                         className='h-12 w-16 shrink-0 rounded-[calc(var(--radius)-4px)] object-cover'
@@ -1260,11 +1261,18 @@ function hitTestCanvas(
   }
 
   const ordered = [...screenshots].sort((a, b) => b.placement.zIndex - a.placement.zIndex);
-  const target = ordered.find((screenshot) => pointInPlacement(point, screenshot.placement, preset.width, preset.height));
+  const target = ordered.find((screenshot) =>
+    pointInPlacement(point, screenshot.placement, preset.width, preset.height),
+  );
   return target ? { id: target.id, action: 'move' } : null;
 }
 
-function hitTestHandles(point: Point, screenshot: UploadedScreenshot, width: number, height: number): 'resize' | 'rotate' | null {
+function hitTestHandles(
+  point: Point,
+  screenshot: UploadedScreenshot,
+  width: number,
+  height: number,
+): 'resize' | 'rotate' | null {
   const handles = getHandlePoints(screenshot.placement, width, height);
   const threshold = Math.max(24, Math.min(width, height) * 0.018);
   if (distance(point, handles.rotate) <= threshold * 1.25) return 'rotate';
@@ -1277,10 +1285,7 @@ function pointInPlacement(point: Point, placement: MockupPlacement, width: numbe
   const local = inverseRotatePoint(point, center, (placement.rotation * Math.PI) / 180);
   const itemWidth = placement.width * width;
   const itemHeight = placement.height * height;
-  return (
-    Math.abs(local.x - center.x) <= itemWidth / 2 &&
-    Math.abs(local.y - center.y) <= itemHeight / 2
-  );
+  return Math.abs(local.x - center.x) <= itemWidth / 2 && Math.abs(local.y - center.y) <= itemHeight / 2;
 }
 
 function getHandlePoints(placement: MockupPlacement, width: number, height: number) {

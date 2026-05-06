@@ -3,6 +3,12 @@ import { RAW_ASSET_BASE } from '~/config/formConfig';
 import { SIGNATURE_ICON_MAIL, SIGNATURE_ICON_MAP_PIN, SIGNATURE_ICON_PHONE } from '~/lib/signatureIconDataUrls';
 import { sanitizeUrl, sanitizePhone, sanitizeEmail } from '~/lib/security';
 
+const SOCIAL_PLATFORM_LABELS: Record<string, string> = {
+  facebook: 'Facebook',
+  linkedin: 'LinkedIn',
+  instagram: 'Instagram',
+};
+
 type EmailSignatureProps = { values: TrimmedValues };
 
 export function EmailSignature({ values }: EmailSignatureProps) {
@@ -146,7 +152,7 @@ export function EmailSignature({ values }: EmailSignatureProps) {
                           <img
                             src={logoSrc}
                             width={100}
-                            alt='Logo'
+                            alt={values.name ? `Company logo — ${values.name}` : 'Company logo'}
                             style={{ maxHeight: 50, width: 'auto', display: 'block' }}
                           />
                         </a>
@@ -180,7 +186,7 @@ export function EmailSignature({ values }: EmailSignatureProps) {
                                       src={`${RAW_ASSET_BASE}/${social.icon}`}
                                       width={20}
                                       height={20}
-                                      alt={social.id}
+                                      alt={SOCIAL_PLATFORM_LABELS[social.id] ?? social.id}
                                       style={{ display: 'block' }}
                                     />
                                   </a>
