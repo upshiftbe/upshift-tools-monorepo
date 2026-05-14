@@ -1,4 +1,5 @@
 export const APP_URLS = {
+  UPSHIFT_HOMEPAGE: 'https://upshift.be',
   TOOLS_OVERVIEW: 'https://tools.upshift.be',
   QR_CODE_CREATOR: 'https://qr-code-maken.upshift.be',
   SCHEMA_MARKUP_GENERATOR: 'https://schema-markup-generator.upshift.be',

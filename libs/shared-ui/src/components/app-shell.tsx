@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { APP_URLS } from '../config/urls';
 import { cn } from '../lib/utils';
 
 export interface NavLink {
@@ -39,7 +40,7 @@ const DEFAULT_FOOTER = (
   <p className='text-sm text-[var(--navbar-foreground)]/80'>
     Built by{' '}
     <a
-      href='https://upshift.be'
+      href={APP_URLS.UPSHIFT_HOMEPAGE}
       target='_blank'
       rel='noopener noreferrer'
       className='font-semibold text-[var(--brand-accent-strong)] transition hover:text-[var(--brand-accent)]'
